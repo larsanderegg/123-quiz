@@ -1,0 +1,49 @@
+<div class="list-container">
+
+  <mat-toolbar color="primary" class="list-header">
+    <span>Rounds</span>
+    <span class="spacer"></span>
+    <button mat-flat-button color="accent" [routerLink]="['/manage/rounds', 'new']">
+      <mat-icon>add</mat-icon>
+      <span>Add New Round</span>
+    </button>
+  </mat-toolbar>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading rounds...</p>
+  </div>
+
+  <div *ngIf="!isLoading && rounds.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">info_outline</mat-icon>
+    <p>No rounds found.</p>
+  </div>
+
+  <div *ngIf="!isLoading && rounds.length > 0" class="list-grid">
+
+    <mat-card *ngFor="let round of rounds" class="list-item-card">
+      <mat-card-header>
+        <mat-card-title>{{ round.name }}</mat-card-title>
+        <mat-card-subtitle>Audio Path: {{ round.audioPath || 'N/A' }}</mat-card-subtitle>
+        <mat-card-subtitle>Image Path: {{ round.backgroundImagePath || 'N/A' }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content class="round-card-content">
+        <p>
+          <mat-icon inline>help_outline</mat-icon>
+          Questions: {{ round._questionCount ?? 'N/A' }}
+        </p>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-stroked-button color="primary" [routerLink]="['/manage/rounds', round.id, 'edit']">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        <button mat-flat-button color="warn" (click)="deleteRound(round.id)">
+          <mat-icon>delete</mat-icon>
+          Delete
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+  </div>
+</div>

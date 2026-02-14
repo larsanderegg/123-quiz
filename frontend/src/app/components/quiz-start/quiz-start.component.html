@@ -1,0 +1,24 @@
+<div class="start-page-container">
+  <div *ngIf="isLoading" class="loading-indicator">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading available rounds...</p>
+  </div>
+
+  <div *ngIf="!isLoading && rounds.length === 0" class="empty-state">
+    <p>No rounds available to start.</p>
+    <p>Please create some rounds first.</p>
+    <button mat-stroked-button routerLink="/rounds">Manage Rounds</button>
+  </div>
+
+  <div *ngIf="!isLoading && rounds.length > 0" class="rounds-selection-container">
+    <div class="rounds-grid">
+      <mat-card *ngFor="let round of rounds"
+                class="round-card-vertical" (click)="startRound(round.id)"
+                tabindex="0" aria-role="button" [attr.aria-label]="'Start round ' + round.name">
+        <mat-card-content class="round-card-content">
+          <span class="round-name">{{ round.name }}</span>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

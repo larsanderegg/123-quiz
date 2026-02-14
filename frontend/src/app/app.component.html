@@ -1,0 +1,25 @@
+<mat-toolbar color="primary" class="app-toolbar" *ngIf="!isPlayerActive">
+  <div class="toolbar-content">
+    <a routerLink="/" class="app-title"> <mat-icon class="title-icon" aria-hidden="false" aria-label="Quiz icon">quiz</mat-icon> <span>{{ title }}</span>
+    </a>
+
+    <div class="nav-links">
+      <button mat-button routerLink="quiz/start" routerLinkActive="active-nav-link">Play Quiz</button>
+      <button mat-button
+              routerLink="manage/questions"
+              routerLinkActive="active-nav-link"
+              [routerLinkActiveOptions]="{exact: true}"> Questions
+      </button>
+      <button mat-button
+              routerLink="manage/rounds"
+              routerLinkActive="active-nav-link">
+        Rounds
+      </button>
+    </div>
+
+  </div>
+</mat-toolbar>
+
+<main [class.fullscreen-player]="isPlayerActive">
+  <router-outlet></router-outlet>
+</main>

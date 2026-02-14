@@ -1,0 +1,135 @@
+// Import Angular Material theme (ensure this path is correct for your setup)
+// Typically done in the main styles.scss, but can be done here if needed scoped.
+// @use '@angular/material' as mat;
+// @include mat.core();
+// $primary: mat.define-palette(mat.$indigo-palette);
+// $accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+// $theme: mat.define-light-theme(( color: ( primary: $primary, accent: $accent, ), typography: mat.define-typography-config(), density: 0, ));
+// @include mat.all-component-themes($theme);
+
+
+// Container for the whole list view
+.question-list-container {
+  padding: 24px;
+}
+
+// Header using mat-toolbar
+.list-header {
+  margin-bottom: 24px;
+  border-radius: 4px; // Optional rounding
+
+  .spacer {
+    flex: 1 1 auto; // Pushes items apart
+  }
+}
+
+// Grid layout for the question cards
+.questions-grid {
+  display: grid;
+  gap: 20px; // Spacing between cards
+  // Responsive columns
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); // Adjust minmax as needed
+}
+
+// Styling for individual cards
+.question-card {
+  display: flex;
+  flex-direction: column; // Ensures actions are at the bottom
+  transition: box-shadow 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); // Slightly more prominent shadow on hover
+  }
+
+  .question-text {
+    line-height: 1.4; // Improve readability
+    margin-bottom: 16px; // Space below title in header
+  }
+
+  .question-image {
+    max-height: 200px; // Limit image height
+    object-fit: cover; // Cover the area nicely
+    margin-bottom: 16px;
+  }
+
+  .answers-heading {
+    margin-bottom: 8px;
+    color: rgba(0,0,0,0.6); // Subtler heading color
+  }
+
+  .answer-list {
+    padding-top: 0 !important; // Override default mat-list padding if needed
+  }
+
+  // Specific styling for answer items
+  .answer-item {
+    height: auto !important; // Allow height to adjust to content
+    min-height: 48px; // Keep a minimum height
+    padding: 8px 0; // Adjust vertical padding
+
+    .mat-icon {
+      margin-right: 12px; // Space after icon
+    }
+
+    .answer-text {
+      white-space: normal; // Allow text wrapping
+      line-height: 1.4;
+    }
+
+    // Style correct/incorrect answers
+    &.correct-answer {
+      background-color: rgba(76, 175, 80, 0.1); // Light green background
+      .answer-text {
+        font-weight: 500; // Slightly bolder text
+      }
+      // Ensure icon color matches
+      .mat-icon {
+        color: #4CAF50; // Explicit green color for check_circle
+      }
+    }
+    &.incorrect-answer {
+      background-color: rgba(0, 0, 0, 0.03); // Very light gray background
+      .answer-text {
+        color: rgba(0,0,0,0.7);
+      }
+      // Ensure icon color matches
+      .mat-icon {
+        color: rgba(0, 0, 0, 0.4); // Gray color for highlight_off
+      }
+    }
+
+    // Hide the divider for the last item
+    &:last-child mat-divider {
+      display: none;
+    }
+  }
+
+  mat-card-actions {
+    padding: 12px 16px !important; // Adjust padding for actions
+    background-color: rgba(0,0,0,0.02); // Subtle background for actions area
+  }
+
+}
+
+// Empty state styling
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #777;
+
+  .empty-icon {
+    font-size: 60px;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 16px;
+    color: #aaa;
+  }
+
+  p {
+    font-size: 1.2rem;
+  }
+  .subtle {
+    font-size: 1rem;
+    color: #aaa;
+  }
+}

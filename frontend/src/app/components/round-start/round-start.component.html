@@ -1,0 +1,36 @@
+<div class="round-start-fullscreen" [ngStyle]="{'background-image': getBackgroundUrl()}">
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>Loading Round...</p>
+  </div>
+
+  <div *ngIf="errorLoading && !isLoading" class="error-message">
+    <h2>Error</h2>
+    <p>{{ errorLoading }}</p>
+    <button mat-stroked-button color="warn" routerLink="/quiz/start">Back to Rounds</button>
+  </div>
+
+  <div *ngIf="!isLoading && !errorLoading && roundData" class="message-container">
+    <h1>Get Ready!</h1>
+    <p class="round-name">{{ roundData.name }}</p>
+
+    <div class="button-group">
+      <button mat-raised-button
+              color="accent"
+              (click)="playRoundAudio()"
+              [disabled]="!roundData.audioPath"
+              aria-label="Play round intro audio">
+        <mat-icon>volume_up</mat-icon> Play Intro
+      </button>
+
+      <button mat-raised-button
+              color="primary"
+              (click)="startQuiz()"
+              aria-label="Start the round">
+        Start Round <mat-icon>play_arrow</mat-icon>
+      </button>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,306 @@
+@use '@angular/material' as mat;
+
+// --- Define Scale Blinking Animation ---
+@keyframes scale-blink-effect {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+
+.quiz-player-fullscreen {
+  font-family: 'Berlin Sans FB', sans-serif;
+  width: 100vw;
+  height: 100vh;
+  background-color: #f0f2f5; // Default background
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 20px;
+  cursor: pointer;
+  color: #333;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.quiz-content {
+  max-width: 95%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+.category-header-container { // Renamed class
+  width: 100%;
+  max-width: 2200px;
+  padding: 10px 25px;
+
+  text-align: center;
+  flex: 0 1 auto;
+  margin-top: 5vh;
+  margin-bottom: 3vh;
+  background-color: rgba(44, 62, 80, 0.75);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
+
+  .category-header-text { // Renamed class
+    font-size: clamp(3.5rem, 4vw, 5rem);
+    font-weight: normal;
+    color: #ffffff;
+    line-height: 1.3;
+    text-shadow: 1px 1px 3px rgba(0,0,0, 0.6);
+  }
+}
+
+.introduction-body-container { // New class
+  margin-top: 0;
+  margin-bottom: 15px;
+  // **** Update width properties ****
+  max-width: 2250px; // Match header max-width
+  width: 100%;      // Match header width (takes available space up to max-width)
+  // **** Update padding to match category header ****
+  padding: 15px 25px;
+  box-sizing: border-box; // Ensure padding is included in width calculation
+
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  border: 1px solid #dce0e6;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+  text-align: left;
+  height: auto;
+
+  flex-grow: 1;
+
+  // Text styling within the body container
+  .introduction-body-text { // New class
+    font-size: clamp(3.1rem, 1.5vw, 1.8rem); // Match explanation text size
+    line-height: 1.6; // Match explanation line height
+    color: #333; // Match explanation text color
+    margin: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    text-align: center; // Center intro text (like explanation)
+  }
+}
+
+.question-container {
+  width: 100%;
+  max-width: 2200px;
+  text-align: center;
+  flex: 0 1 auto;
+  margin-top: 5vh;
+  margin-bottom: 3vh;
+  padding: 10px 25px;
+  background-color: rgba(44, 62, 80, 0.75);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
+  .question-text {
+    font-size: clamp(3.5rem, 4vw, 5rem);
+    font-weight: normal;
+    color: #ffffff;
+    line-height: 1.3;
+    text-shadow: 1px 1px 3px rgba(0,0,0, 0.6);
+  }
+}
+
+// Horizontal container for answers
+.answers-container-horizontal {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+  flex: 1 1 auto;
+  padding: 0 2vw;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  max-height: 60vh;
+}
+
+// Styling for each answer slot
+.answer-slot {
+  flex: 1;
+  min-width: 0;
+  background-color: rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; // Center placeholder initially
+  text-align: center;
+  transition: background-color 0.3s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out, border-color 0.25s ease-in-out;
+  overflow: hidden;
+
+  &.placeholder {
+    background-color: rgba(233, 236, 239, 0.8);
+    border-color: transparent;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    .placeholder-text {
+      font-size: 10rem;
+      font-weight: bold;
+      color: rgba(0,0,0,0.1); // Make placeholder number faint
+    }
+  }
+
+  &.empty {
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+  }
+
+  &.revealed {
+    justify-content: space-around;
+
+    .answer-image {
+      width: 90%;
+      max-width: 90%;
+      height: auto;
+      max-height: 65%;
+      border-radius: 4px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    .answer-text {
+      font-size: clamp(3.1rem, 1.5vw, 1.8rem); // Adjusted font size range
+      line-height: 1.4;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      max-width: 100%;
+      flex-shrink: 0;
+      color: #333;
+      margin-top: auto; // Push text towards bottom if image is small
+    }
+
+    &.blinking {
+      animation: scale-blink-effect 0.5s infinite ease-in-out;
+    }
+  }
+
+  &.correct-answer-highlight {
+    animation: none;
+    background-color: mat.m2-get-color-from-palette(mat.$m2-green-palette, 100) !important;
+    border: 2px solid mat.m2-get-color-from-palette(mat.$m2-green-palette, 500) !important; // Add prominent border
+    transform: scale(1.03);
+    z-index: 2;
+    opacity: 1;
+  }
+  &.incorrect-answer-dim {
+    animation: none;
+    opacity: 0.6;
+    background-color: rgba(200, 200, 200, 0.7) !important;
+    transform: scale(1);
+    border-color: transparent !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+}
+
+// Explanation area styles
+.explanation-container {
+  margin-bottom: 5px;
+  // **** Update width properties ****
+  max-width: 2250px; // Match header max-width
+  width: 100%;      // Match header width (takes available space up to max-width)
+  // **** Update padding to match question header (or category header) ****
+  padding: 15px 30px; // Using category header padding for consistency
+  box-sizing: border-box; // Ensure padding is included in width calculation
+
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  border: 1px solid #dce0e6;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+  max-height: 15vh; // Initial collapsed height
+  overflow-y: auto;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out, max-height 0.4s ease-in-out, flex-grow 0.4s ease-in-out;
+  height: auto;
+
+  &.visible { // Fade in and slide up when shown
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .explanation-text {
+    font-size: clamp(3.1rem, 1.5vw, 1.8rem); // Responsive explanation text
+    line-height: 1.6; // Increased line height for readability
+    color: #333;
+    margin: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    text-align: center; // Center explanation text
+  }
+
+  .explanation-image {
+    display: block;
+    max-width: 80%;
+    max-height: 40vh;
+    margin: 0 auto 20px auto;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  // Expand explanation area significantly when visible
+  &.expanded {
+    flex-grow: 1;
+    max-height: 70vh; // Allow much more height
+    margin-bottom: 2vh;
+    padding: 25px 35px;
+    // font-size: 1.1rem; // Already handled by clamp
+  }
+}
+
+// Quiz Finished Message styles
+.quiz-finished-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  padding: 40px 50px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  max-width: 90%;
+  width: auto;
+
+  h1 {
+    font-size: 3rem;
+    color: mat.m2-get-color-from-palette(mat.$m2-indigo-palette, 500);
+    margin-bottom: 25px;
+    margin-top: 0;
+  }
+  button {
+    // Add styles if needed
+  }
+}
+
+// Loading Bar at the top
+mat-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+}

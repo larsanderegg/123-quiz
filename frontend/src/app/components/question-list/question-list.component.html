@@ -1,0 +1,55 @@
+<div class="question-list-container">
+
+  <mat-toolbar color="primary" class="list-header">
+    <span>Questions</span>
+    <span class="spacer"></span>
+    <button mat-flat-button color="accent" [routerLink]="['/manage/questions', 'new']">
+      <mat-icon>add</mat-icon>
+      <span>Add New Question</span>
+    </button>
+  </mat-toolbar>
+
+  <div *ngIf="questions.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">info_outline</mat-icon>
+    <p>No questions found.</p>
+    <p class="subtle">Why not add one?</p>
+  </div>
+
+  <div *ngIf="questions.length > 0" class="questions-grid">
+
+    <mat-card *ngFor="let question of questions" class="question-card">
+      <mat-card-header>
+        <mat-card-title class="question-text">{{ question.text }}</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <h3 class="mat-subheading-1 answers-heading">Answers:</h3>
+        <mat-list dense class="answer-list">
+          <mat-list-item *ngFor="let answer of question.answers"
+                         class="answer-item"
+                         [ngClass]="{ 'correct-answer': answer.isCorrect, 'incorrect-answer': !answer.isCorrect }">
+
+            <mat-icon matListItemIcon [color]="answer.isCorrect ? 'primary' : 'disabled'">
+              {{ answer.isCorrect ? 'check_circle' : 'highlight_off' }}
+            </mat-icon>
+
+            <div matListItemTitle class="answer-text">{{ answer.text }}</div>
+
+            <mat-divider></mat-divider>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button color="primary" [routerLink]="['/manage/questions', question.id, 'edit']">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        <button mat-flat-button color="warn" (click)="deleteQuestion(question.id)">
+          <mat-icon>delete</mat-icon>
+          Delete
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

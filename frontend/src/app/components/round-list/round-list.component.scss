@@ -1,0 +1,74 @@
+// Import common list/grid styles or define specific ones
+// Example: reuse styles if defined globally or import a shared partial
+
+.list-container {
+  padding: 24px;
+}
+
+.list-header {
+  margin-bottom: 24px;
+  border-radius: 4px; // Optional rounding
+  .spacer { flex: 1 1 auto; }
+}
+
+.list-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); // Adjust minmax
+}
+
+.list-item-card {
+  // Add styles similar to question-card if needed
+  transition: box-shadow 0.3s ease-in-out;
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  mat-card-actions {
+    padding: 12px 16px !important;
+    background-color: rgba(0,0,0,0.02);
+  }
+}
+
+.round-card-content {
+  padding: 8px 16px; // Add some padding to the content area
+
+  p {
+    display: flex;
+    align-items: center;
+    gap: 8px; // Space between icon and text
+    color: rgba(0,0,0,0.6); // Subtler text color
+    font-size: 0.9rem;
+    margin: 0;
+
+    mat-icon {
+      font-size: 1.1rem; // Adjust icon size
+      height: 1.1rem;
+      width: 1.1rem;
+    }
+  }
+}
+
+// Ensure card actions are still nicely padded if content padding changed things
+.list-item-card mat-card-actions {
+  padding: 12px 16px !important; // May need !important if overridden
+  background-color: rgba(0,0,0,0.02);
+}
+
+.loading-indicator {
+  display: flex;
+  flex-direction: column; // Stack spinner and text
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #666;
+  gap: 15px; // Space between spinner and text
+}
+
+.empty-state { /* Reuse styles from question-list */
+  text-align: center;
+  padding: 60px 20px;
+  color: #777;
+  .empty-icon { font-size: 60px; width: 60px; height: 60px; margin-bottom: 16px; color: #aaa; }
+  p { font-size: 1.2rem; }
+  .subtle { font-size: 1rem; color: #aaa; }
+}
