@@ -1,0 +1,86 @@
+<div class="quiz-preview-container"
+     [ngStyle]="{'background-image': backgroundImage ? 'url(' + backgroundImage + ')' : 'none'}">
+
+  <div *ngIf="!question" class="no-question-message">
+    <p>No question data available for preview</p>
+  </div>
+
+  <div *ngIf="question" class="quiz-content-preview">
+
+    <!-- Step 0: Category & Introduction -->
+    <div *ngIf="currentStep === 0" class="category-header-container">
+      <h1 class="category-header-text">{{ question.category }}</h1>
+    </div>
+    <div *ngIf="currentStep === 0 && question.introduction"
+         class="introduction-body-container">
+      <p class="introduction-body-text">{{ question.introduction }}</p>
+    </div>
+
+    <!-- Step 1+: Question Text -->
+    <div *ngIf="currentStep >= 1" class="question-container">
+      <h1 class="question-text">{{ question.text }}</h1>
+    </div>
+
+    <!-- Steps 1-6: Answers Container -->
+    <div *ngIf="currentStep >= 1 && !showExplanation" class="answers-container-horizontal">
+      <ng-container *ngFor="let answer of answers; let i = index">
+        <!-- Revealed Answer -->
+        <div *ngIf="currentStep > (i + 1); else placeholderSlot"
+             class="answer-slot revealed"
+             [ngClass]="{
+               'correct-answer-highlight': showCorrectHighlight && answer.isCorrect,
+               'incorrect-answer-dim': showCorrectHighlight && !answer.isCorrect,
+               'blinking': isAnswerBlinking(i)
+             }">
+          <img *ngIf="answer.imageUrl"
+               [src]="answer.imageUrl"
+               alt="Answer Image"
+               class="answer-image">
+          <img *ngIf="!answer.imageUrl && answer.image && answer.imageMimeType"
+               [src]="'data:' + answer.imageMimeType + ';base64,' + answer.image"
+               alt="Answer Image"
+               class="answer-image">
+          <span class="answer-text">{{ answer.text }}</span>
+        </div>
+
+        <!-- Placeholder (not yet revealed) -->
+        <ng-template #placeholderSlot>
+          <div class="answer-slot placeholder">
+            <span class="placeholder-text">{{ i + 1 }}</span>
+          </div>
+        </ng-template>
+      </ng-container>
+
+      <!-- Empty slots for missing answers -->
+      <ng-container *ngIf="answers.length < 3">
+        <div *ngFor="let _ of getEmptySlots()" class="answer-slot empty"></div>
+      </ng-container>
+    </div>
+
+    <!-- Step 7: Explanation -->
+    <div *ngIf="showExplanation && (question.explanation || question.imageUrl || (question.image && question.imageMimeType))"
+         class="explanation-container expanded visible">
+
+      <!-- Use imageUrl (new) or fall back to legacy image -->
+      <img *ngIf="question.imageUrl"
+           class="explanation-image"
+           [src]="question.imageUrl"
+           alt="Explanation image">
+      <img *ngIf="!question.imageUrl && question.image && question.imageMimeType"
+           class="explanation-image"
+           [src]="'data:' + question.imageMimeType + ';base64,' + question.image"
+           alt="Explanation image">
+
+      <p *ngIf="question.explanation" class="explanation-text">
+        {{ question.explanation }}
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Preview Mode Indicator -->
+  <div class="preview-indicator" *ngIf="previewMode">
+    <span class="preview-badge">PREVIEW</span>
+  </div>
+
+</div>

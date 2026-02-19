@@ -1,0 +1,369 @@
+<div class="form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ isEditMode ? 'Edit Round' : 'Add New Round' }}</mat-card-title>
+      <mat-progress-bar *ngIf="isLoading" mode="indeterminate" color="primary"
+                        class="form-loading-bar"></mat-progress-bar>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="roundForm" (ngSubmit)="onSubmit()">
+
+        <mat-accordion multi="true">
+
+          <!-- Basic Information Panel (Always Expanded) -->
+          <mat-expansion-panel [expanded]="true" [disabled]="true" class="section-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="panel-icon">info</mat-icon>
+                Basic Information
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="section-content">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Round Name</mat-label>
+                <input matInput formControlName="name" required>
+                <mat-error *ngIf="roundForm.controls['name'].hasError('required')">
+                  Round name is required
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="order-field">
+                <mat-label>Display Order</mat-label>
+                <input matInput type="number" formControlName="order" required min="0">
+                <mat-error *ngIf="roundForm.controls['order']?.hasError('required')">Order is required</mat-error>
+                <mat-error *ngIf="roundForm.controls['order']?.hasError('min')">Order must be 0 or greater</mat-error>
+                <mat-hint>Determines the display order on the start page (lower numbers first)</mat-hint>
+              </mat-form-field>
+            </div>
+          </mat-expansion-panel>
+
+          <!-- Media Files Panel (Always Expanded) -->
+          <mat-expansion-panel [expanded]="true" [disabled]="true" class="section-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="panel-icon">perm_media</mat-icon>
+                Media Files
+              </mat-panel-title>
+              <mat-panel-description>
+                Audio and background image for this round
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="section-content">
+              <!-- Audio File Upload -->
+              <div class="file-upload-section">
+                <h4 class="subsection-title">
+                  <mat-icon inline>audiotrack</mat-icon>
+                  Audio File
+                </h4>
+
+                <div class="file-upload-controls">
+                  <input
+                    type="file"
+                    #audioInput
+                    accept="audio/*"
+                    (change)="onAudioFileSelected($event)"
+                    style="display: none">
+
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    type="button"
+                    (click)="audioInput.click()"
+                    [disabled]="isLoading">
+                    <mat-icon>upload_file</mat-icon>
+                    {{ audioFile ? 'Change Audio' : (existingAudioUrl ? 'Replace Audio' : 'Upload Audio') }}
+                  </button>
+
+                  <button
+                    *ngIf="audioFile || audioPreview"
+                    mat-icon-button
+                    type="button"
+                    (click)="clearAudioFile()"
+                    [disabled]="isLoading"
+                    matTooltip="Clear selection">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </div>
+
+                <!-- Audio Preview -->
+                <div *ngIf="audioPreview" class="file-preview">
+                  <div class="preview-info">
+                    <mat-icon class="preview-icon">audiotrack</mat-icon>
+                    <div class="preview-details">
+                      <span class="preview-text">{{ audioFile ? audioFile.name : 'Current audio file' }}</span>
+                      <div class="preview-metadata">
+                        <span *ngIf="audioFile" class="file-size">{{ getFileSize(audioFile.size) }}</span>
+                        <span *ngIf="audioDuration" class="file-metadata">{{ formatAudioDuration(audioDuration) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <audio *ngIf="audioPreview && !isLoading" controls class="audio-player">
+                    <source [src]="audioPreview" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                  </audio>
+                  <!-- Upload progress bar for audio -->
+                  <div *ngIf="isUploadingAudio" class="upload-progress">
+                    <mat-progress-bar mode="determinate" [value]="audioUploadProgress"></mat-progress-bar>
+                    <span class="progress-text">Uploading... {{ audioUploadProgress.toFixed(0) }}%</span>
+                  </div>
+                </div>
+
+                <p class="file-hint">
+                  <mat-icon inline class="hint-icon">info</mat-icon>
+                  Accepted formats: MP3, WAV, OGG, AAC, M4A (max 20MB)
+                </p>
+              </div>
+
+              <!-- Background Image Upload -->
+              <div class="file-upload-section">
+                <h4 class="subsection-title">
+                  <mat-icon inline>image</mat-icon>
+                  Background Image
+                  <span class="optional-badge">Optional</span>
+                </h4>
+
+                <div class="file-upload-controls">
+                  <input
+                    type="file"
+                    #backgroundInput
+                    accept="image/*"
+                    (change)="onBackgroundFileSelected($event)"
+                    style="display: none">
+
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    type="button"
+                    (click)="backgroundInput.click()"
+                    [disabled]="isLoading">
+                    <mat-icon>image</mat-icon>
+                    {{ backgroundImageFile ? 'Change Image' : (existingBackgroundUrl ? 'Replace Image' : 'Upload Image') }}
+                  </button>
+
+                  <button
+                    *ngIf="backgroundImageFile || backgroundPreview"
+                    mat-icon-button
+                    type="button"
+                    (click)="clearBackgroundFile()"
+                    [disabled]="isLoading"
+                    matTooltip="Clear selection">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </div>
+
+                <!-- Image Preview -->
+                <div *ngIf="backgroundPreview" class="file-preview">
+                  <div class="preview-info">
+                    <mat-icon class="preview-icon">image</mat-icon>
+                    <div class="preview-details">
+                      <span class="preview-text">{{ backgroundImageFile ? backgroundImageFile.name : 'Current background image' }}</span>
+                      <div class="preview-metadata">
+                        <span *ngIf="backgroundImageFile" class="file-size">{{ getFileSize(backgroundImageFile.size) }}</span>
+                        <span *ngIf="backgroundImageDimensions" class="file-metadata">{{ getImageDimensionsText() }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <img
+                    *ngIf="backgroundPreview"
+                    [src]="backgroundPreview"
+                    alt="Background preview"
+                    class="image-preview">
+                  <!-- Upload progress bar for background image -->
+                  <div *ngIf="isUploadingBackground" class="upload-progress">
+                    <mat-progress-bar mode="determinate" [value]="backgroundUploadProgress"></mat-progress-bar>
+                    <span class="progress-text">Uploading... {{ backgroundUploadProgress.toFixed(0) }}%</span>
+                  </div>
+                </div>
+
+                <p class="file-hint">
+                  <mat-icon inline class="hint-icon">info</mat-icon>
+                  Accepted formats: JPG, PNG, GIF, WebP (max 5MB). Recommended: 1920x1080 or higher
+                </p>
+              </div>
+            </div>
+          </mat-expansion-panel>
+
+          <!-- Theme Customization Panel (Collapsible, Optional) -->
+          <mat-expansion-panel [(expanded)]="showThemeEditor" class="section-panel optional-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="panel-icon">palette</mat-icon>
+                Theme Customization
+                <span class="optional-badge">Optional</span>
+              </mat-panel-title>
+              <mat-panel-description>
+                Customize colors, fonts, and styling for this round
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div [formGroup]="themeFormGroup" class="section-content theme-content">
+
+              <!-- Colors Section -->
+              <div class="theme-subsection">
+                <h3 class="subsection-title">
+                  <mat-icon inline>palette</mat-icon>
+                  Colors
+                </h3>
+                <div class="theme-grid">
+
+                  <mat-form-field appearance="outline" class="color-picker-field">
+                    <mat-label>Primary Color</mat-label>
+                    <input matInput type="color" formControlName="primaryColor">
+                    <mat-hint>Main text color</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="color-picker-field">
+                    <mat-label>Category Header Color</mat-label>
+                    <input matInput type="color" formControlName="categoryHeaderColor">
+                    <mat-hint>Category text color</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="color-picker-field">
+                    <mat-label>Question Color</mat-label>
+                    <input matInput type="color" formControlName="questionColor">
+                    <mat-hint>Question text color</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="color-picker-field">
+                    <mat-label>Answer Color</mat-label>
+                    <input matInput type="color" formControlName="answerColor">
+                    <mat-hint>Answer text color</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="color-picker-field">
+                    <mat-label>Background Color</mat-label>
+                    <input matInput type="color" formControlName="backgroundColor">
+                    <mat-hint>Background overlay color</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="color-picker-field">
+                    <mat-label>Correct Highlight Color</mat-label>
+                    <input matInput type="color" formControlName="correctHighlightColor">
+                    <mat-hint>Correct answer highlight</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="color-picker-field">
+                    <mat-label>Incorrect Dim Color</mat-label>
+                    <input matInput type="color" formControlName="incorrectDimColor">
+                    <mat-hint>Incorrect answer color</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="color-picker-field">
+                    <mat-label>Secondary Color</mat-label>
+                    <input matInput type="color" formControlName="secondaryColor">
+                    <mat-hint>Secondary elements</mat-hint>
+                  </mat-form-field>
+
+                </div>
+              </div>
+
+              <!-- Typography Section -->
+              <div class="theme-subsection">
+                <h3 class="subsection-title">
+                  <mat-icon inline>text_fields</mat-icon>
+                  Typography
+                </h3>
+                <div class="theme-grid">
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Font Family</mat-label>
+                    <mat-select formControlName="fontFamily">
+                      <mat-option value="">Default</mat-option>
+                      <mat-option *ngFor="let font of availableFonts" [value]="font.value">
+                        {{ font.label }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-hint>Main font for all text</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Category Font Size</mat-label>
+                    <input matInput formControlName="categoryFontSize" placeholder="e.g., 48px, 3rem">
+                    <mat-hint>Size for category headers</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Question Font Size</mat-label>
+                    <input matInput formControlName="questionFontSize" placeholder="e.g., 48px, 3rem">
+                    <mat-hint>Size for question text</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Answer Font Size</mat-label>
+                    <input matInput formControlName="answerFontSize" placeholder="e.g., 24px, 1.5rem">
+                    <mat-hint>Size for answer text</mat-hint>
+                  </mat-form-field>
+
+                </div>
+              </div>
+
+              <!-- Layout Section -->
+              <div class="theme-subsection">
+                <h3 class="subsection-title">
+                  <mat-icon inline>view_quilt</mat-icon>
+                  Layout & Spacing
+                </h3>
+                <div class="theme-grid">
+
+                  <div class="slider-container">
+                    <label class="slider-label">Background Opacity: {{ formatOpacityLabel(themeFormGroup.get('backgroundOpacity')?.value || 0) }}</label>
+                    <mat-slider min="0" max="100" step="5" showTickMarks discrete class="full-width">
+                      <input matSliderThumb formControlName="backgroundOpacity">
+                    </mat-slider>
+                    <span class="slider-hint">Dims the background image</span>
+                  </div>
+
+                  <div class="slider-container">
+                    <label class="slider-label">Answer Card Opacity: {{ formatOpacityLabel(themeFormGroup.get('answerCardOpacity')?.value || 0) }}</label>
+                    <mat-slider min="0" max="100" step="5" showTickMarks discrete class="full-width">
+                      <input matSliderThumb formControlName="answerCardOpacity">
+                    </mat-slider>
+                    <span class="slider-hint">Transparency of answer cards</span>
+                  </div>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Padding</mat-label>
+                    <input matInput formControlName="padding" placeholder="e.g., 20px, 1rem">
+                    <mat-hint>Overall padding</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Answer Spacing</mat-label>
+                    <input matInput formControlName="answerSpacing" placeholder="e.g., 20px, 1rem">
+                    <mat-hint>Space between answers</mat-hint>
+                  </mat-form-field>
+
+                </div>
+              </div>
+
+              <!-- Reset Button -->
+              <div class="theme-actions">
+                <button mat-stroked-button type="button" (click)="resetTheme()" [disabled]="isLoading">
+                  <mat-icon>refresh</mat-icon>
+                  Reset to Defaults
+                </button>
+              </div>
+
+            </div>
+          </mat-expansion-panel>
+
+        </mat-accordion>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end" class="sticky-actions">
+      <button mat-button type="button" (click)="cancel()" [disabled]="isLoading || isUploadingAudio || isUploadingBackground">Cancel</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitDisabled()"
+              (click)="onSubmit()">
+        <span *ngIf="!isLoading && !isUploadingAudio && !isUploadingBackground">{{ isEditMode ? 'Update Round' : 'Save Round' }}</span>
+        <span *ngIf="isLoading && !isUploadingAudio && !isUploadingBackground">{{ isEditMode ? 'Updating...' : 'Saving...' }}</span>
+        <span *ngIf="isUploadingAudio || isUploadingBackground">Uploading files...</span>
+      </button>
+    </mat-card-actions>
+
+  </mat-card>
+</div>

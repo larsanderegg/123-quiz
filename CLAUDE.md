@@ -4,156 +4,225 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a quiz application monorepo with three workspaces:
-- **backend**: NestJS REST API with TypeORM (port 3000)
-- **frontend**: Angular standalone component application (port 4200)
-- **shared**: TypeScript package containing shared TypeORM entities, enums, and types
+This is a serverless quiz application built with Angular and Firebase. The application was migrated from a NestJS/PostgreSQL monorepo to a Firebase-based architecture.
 
-The application manages quiz rounds, questions, answers, and LED control modes for a quiz system.
+- **Frontend**: Angular 20 standalone components (no NgModules)
+- **Database**: Cloud Firestore
+- **File Storage**: Google Cloud Storage
+- **Authentication**: Firebase Authentication with Google Sign-In
+- **Hosting**: Firebase Hosting (GCP)
+- **Models**: TypeScript interfaces and types in `src/app/models/`
+
+The application manages quiz rounds, questions, answers, and LED control modes for a quiz system with role-based access (authenticated users and admins).
 
 ## Essential Commands
 
-### Initial Setup
-```bash
-npm install                           # Install all workspace dependencies
-cd docker && docker-compose up -d     # Start PostgreSQL database
-cp .env.development .env              # Create environment file (if needed)
-```
-
 ### Development
 ```bash
-npm run start:backend:dev             # Backend with auto-rebuild on changes
-npm run start:frontend                # Frontend dev server with hot reload
+npm start                         # Start dev server (port 4200)
+npm run watch                     # Build in watch mode
 ```
-
-Note: Backend runs `build:shared && build:backend` before starting, so shared changes are automatically picked up.
 
 ### Building
 ```bash
-npm run build:shared                  # Build shared package (must build first)
-npm run build:backend                 # Build backend (depends on shared)
-npm run build:frontend                # Build frontend
-npm run build                         # Build all three workspaces in order
+npm run build                     # Build for production (outputs to public/)
 ```
 
 ### Testing
 ```bash
-# Backend tests (Jest)
-npm run test:backend                  # Run all backend tests
-npm run test:backend -- --watch       # Run tests in watch mode
-npm run test:backend -- path/to/test.spec.ts    # Run single test file
-npm run test:backend -- --coverage    # Run with coverage
-
-# Frontend tests (Karma/Jasmine)
-npm run test:frontend                 # Run all frontend tests
+npm test                          # Run all tests (Karma/Jasmine)
 ```
 
-### Linting and Formatting
+### Deployment
 ```bash
-# Backend only (no frontend linting configured)
-cd backend && npm run lint            # ESLint with auto-fix
-cd backend && npm run format          # Prettier formatting
+npm run deploy                    # Build and deploy everything to Firebase
+npm run deploy:hosting            # Deploy only hosting
+npm run deploy:rules              # Deploy only Firestore and Storage rules
+```
+
+### Firebase CLI Commands
+```bash
+firebase login                    # Authenticate with Firebase
+firebase projects:list            # List available projects
+firebase deploy                   # Deploy all Firebase resources
+firebase deploy --only hosting    # Deploy only hosting
+firebase deploy --only firestore:rules,storage:rules
+firebase open                     # Open Firebase Console
 ```
 
 ## Architecture
 
-### Workspace Dependencies
+### Data Model
 
-The build order matters due to workspace dependencies:
-1. **shared** must be built first (produces `dist/` output)
-2. **backend** depends on `@quiz/shared` (via tsconfig paths: `@quiz/shared` → `../shared/src`)
-3. **frontend** also imports from `@quiz/shared`
+All data stored in Cloud Firestore collections:
 
-When modifying shared entities, always rebuild shared before building/running dependent workspaces.
+**Collections**:
+- `users`: User profiles with admin flags (uid, email, displayName, photoURL, isAdmin)
+- `rounds`: Quiz rounds (name, order, audioUrl, backgroundImageUrl)
+- `questions`: Quiz questions (text, explanation, category, introduction, order, imageUrl, roundId)
+- `answers`: Possible answers (text, isCorrect, order, imageUrl, questionId)
 
-### Database Architecture
+**Key Notes**:
+- All collections use auto-generated document IDs
+- Images and audio stored in Cloud Storage, referenced by URL in Firestore documents
+- Legacy properties (`image`, `imageMimeType`, `audioPath`, `backgroundImagePath`) exist for backward compatibility but should not be used in new code
+- All documents include `createdAt` and `updatedAt` timestamp fields
 
-**TypeORM Entities** (all defined in `shared/src/entities/`):
+### Cloud Storage Structure
 
-- **Round**: Quiz rounds with audio and background images
-  - Contains: name, order, audioPath, backgroundImagePath
-  - Has many Questions (one-to-many)
-
-- **Question**: Individual quiz questions
-  - Contains: text, explanation, category, introduction, order, image (bytea), imageMimeType
-  - Belongs to one Round (many-to-one)
-  - Has many Answers (one-to-many with cascade)
-
-- **Answer**: Possible answers for questions
-  - Contains: text, isCorrect, image (bytea), imageMimeType, order
-  - Belongs to one Question (many-to-one)
-
-**Key Database Notes**:
-- Uses UUID primary keys (`@PrimaryGeneratedColumn('uuid')`)
-- Images stored as `bytea` (Buffer) with corresponding mimeType fields
-- Auto-synchronization enabled in development (`synchronize: true` when `NODE_ENV !== 'production'`)
-- Database connection configured via environment variables (POSTGRES_HOST, POSTGRES_PORT, etc.)
-
-### Backend Architecture
-
-NestJS modules (all in `backend/src/`):
-- **QuestionsModule**: CRUD for questions with image upload support
-- **AnswersModule**: CRUD for answers
-- **RoundsModule**: CRUD for quiz rounds
-- **LedControlModule**: LED control API (modes: OFF, ALL, BLINK, ONE, TWO, THREE)
-
-**Important Backend Notes**:
-- Uses ES modules (`"type": "module"` in package.json)
-- All imports must use `.js` extensions (TypeScript ES module requirement)
-- CORS enabled in `main.ts`
-- Runs on port 3000 (configurable via PORT env var)
-- Uses `--watch` mode with Node's built-in watcher for auto-reload
+```
+/audio/rounds/          # Audio files for rounds
+/images/rounds/         # Background images for rounds
+/images/questions/      # Images for questions
+/images/answers/        # Images for answers
+```
 
 ### Frontend Architecture
 
-Angular 19 standalone components (no NgModules):
+**Angular 20 Standalone Components** (no NgModules):
 
-**Routes** (`frontend/src/app/app.routes.ts`):
-- `/quiz/start`: Quiz start screen
-- `/quiz/:roundId/start`: Round start screen
-- `/quiz/:roundId/play`: Quiz player interface
-- `/manage/questions`: Question list and CRUD
-- `/manage/rounds`: Round list and CRUD
+**Routes** (`src/app/app.routes.ts`):
+- `/login`: Login page
+- `/unauthorized`: Access denied page
+- `/quiz/start`: Quiz start screen (authenticated users only)
+- `/quiz/:roundId/start`: Round start screen (authenticated users only)
+- `/quiz/:roundId/play`: Quiz player interface (authenticated users only)
+- `/manage/questions`: Question list and CRUD (admin only)
+- `/manage/rounds`: Round list and CRUD (admin only)
 
-**Services**:
-- `QuestionService`: HTTP client for question API
-- `RoundService`: HTTP client for round API
-- `LedControlService`: HTTP client for LED control API
+**Services** (`src/app/services/`):
+- `AuthService`: Firebase Authentication, Google Sign-In with redirect, user profile management
+- `QuestionService`: Firestore CRUD for questions and answers, integrated image upload
+- `RoundService`: Firestore CRUD for rounds, integrated audio/image upload
+- `StorageService`: Cloud Storage file upload/delete operations
+- `LedControlService`: LED control API (modes: OFF, ALL, BLINK, ONE, TWO, THREE)
 
-**Components**:
-- Quiz flow: `QuizStartComponent` → `RoundStartComponent` → `QuizPlayerComponent`
-- Management: `QuestionListComponent`, `QuestionFormComponent`, `RoundListComponent`, `RoundFormComponent`
+**Guards** (`src/app/guards/`):
+- `authGuard`: Requires Firebase Authentication
+- `adminGuard`: Requires admin role (checked via Firestore user profile)
 
-### Module Import Pattern
+**Models** (`src/app/models/`):
+- TypeScript interfaces for Round, Question, Answer, User, UserProfile, LedControlMode
+- Input types omit auto-generated fields (`id`, `createdAt`, `updatedAt`)
 
-When importing from the shared package in backend/frontend:
-```typescript
-import { Question, Answer, Round, LedControlMode } from '@quiz/shared';
-```
+### Authentication and Authorization
 
-In backend files, remember the `.js` extension requirement for relative imports:
-```typescript
-import { SomeService } from './some.service.js';
-```
+**Authentication**: Firebase Authentication with Google Sign-In
+- Uses `signInWithRedirect` to avoid COOP issues
+- User must exist in Firestore `users` collection to access the app
+- `AuthService.handleRedirectResult()` called on app initialization to complete sign-in
+
+**Authorization**: Role-based via Firestore security rules
+- All authenticated users can read data and play quizzes
+- Only users with `isAdmin: true` in their Firestore user document can access management routes
+- Security rules enforce server-side validation of all read/write operations
+
+**User Management**:
+- Admins must pre-create user documents in Firestore with `isAdmin` flag
+- New users attempting to sign in without a pre-created document will be denied access
+- User profiles stored in `users/{uid}` with fields: uid, email, displayName, photoURL, isAdmin
+
+### Firestore Security Rules
+
+Located in `firestore.rules`. Key patterns:
+- Helper functions: `isAuthenticated()`, `userExists()`, `isAdmin()`, `isOwner(userId)`
+- Validation functions: Field type checking, string length limits, timestamp validation, storage URL validation
+- All collections require authentication to read
+- Only admins can create/update/delete quiz data (rounds, questions, answers)
+- Users can only read their own profile; admins can manage all users
+- Strict field validation on all write operations
+
+### Service Patterns
+
+**QuestionService** complex operations:
+- `saveQuestionWithAnswers()`: Comprehensive method handling create/update of questions with answers and image uploads
+- Handles cascading deletes (deletes associated images from Storage)
+- Manages answer creation/update/deletion in edit mode
+- Uses RxJS operators extensively: `switchMap`, `forkJoin`, `map`, `take(1)`
+
+**StorageService** utilities:
+- `uploadFile(file, path)`: Upload file and return download URL
+- `deleteFile(path)`: Delete file from storage
+- `generateUniquePath(fileName, folder)`: Create unique path with timestamp
+- `getPathFromUrl(url)`: Extract storage path from download URL
 
 ## Environment Configuration
 
-Required environment variables (see `docker/.env` for reference):
-- `POSTGRES_HOST`: Database host (default: localhost)
-- `POSTGRES_PORT`: Database port (default: 5432)
-- `POSTGRES_USER`: Database user
-- `POSTGRES_PASSWORD`: Database password
-- `POSTGRES_DB`: Database name
-- `PORT`: Backend API port (default: 3000)
+**Firebase Configuration Files**:
+- `src/environments/environment.ts`: Production config
+- `src/environments/environment.development.ts`: Development config
 
-## Docker Database
-
-PostgreSQL 15 runs in Docker:
-```bash
-cd docker
-docker-compose up -d              # Start database
-docker-compose down               # Stop database
-docker-compose down -v            # Stop and remove volumes (data loss!)
+Both files must contain:
+```typescript
+export const environment = {
+  production: boolean,
+  firebase: {
+    apiKey: string,
+    authDomain: string,
+    projectId: string,
+    storageBucket: string,
+    messagingSenderId: string,
+    appId: string
+  }
+};
 ```
 
-Database includes `init.sql` for initial schema setup. Data persists in `postgres_data` volume.
+Get configuration values from Firebase Console → Project Settings → General → Your apps.
+
+## Firebase Setup
+
+See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for complete Firebase project setup instructions.
+
+Key setup steps:
+1. Create Firebase project in console
+2. Enable Firestore and Cloud Storage
+3. Register web app and get config
+4. Install Firebase CLI: `npm install -g firebase-tools`
+5. Login: `firebase login`
+6. Deploy: `npm run deploy`
+
+## Migration Notes
+
+This project was migrated from a NestJS/PostgreSQL/TypeORM architecture to Firebase. See [MIGRATION.md](MIGRATION.md) for data migration scripts and process.
+
+**Legacy Properties**: Some models retain deprecated properties (e.g., `image`, `imageMimeType`, `audioPath`) for backward compatibility. New code should only use `imageUrl` and `audioUrl` properties with Cloud Storage URLs.
+
+## Important Development Notes
+
+### Working with Firestore Queries
+
+- Avoid using `orderBy()` with `where()` in Firestore queries unless a composite index exists
+- Instead, query without `orderBy` and sort in-memory with `.sort()` in the RxJS pipe
+- See `QuestionService.getAllQuestionsByRound()` and `getAnswersByQuestion()` for examples
+
+### RxJS Patterns
+
+- Always use `.pipe(take(1))` on Firestore observables to prevent memory leaks
+- Use `switchMap` for dependent operations (e.g., create then upload image)
+- Use `forkJoin` for parallel operations (e.g., deleting multiple files)
+- Use `from()` to convert Promises to Observables
+
+### Firebase Storage URLs
+
+- Storage URLs are permanent and won't change unless files are deleted
+- Extract storage paths from URLs using `StorageService.getPathFromUrl()`
+- Always delete old files from storage when updating with new uploads
+
+### Authentication Flow
+
+1. User clicks "Sign in with Google" on `/login`
+2. `AuthService.signInWithGoogle()` calls `signInWithRedirect()`
+3. User redirected to Google, then back to app
+4. `AuthService.handleRedirectResult()` (called in `LoginComponent.ngOnInit()`) checks if user document exists in Firestore
+5. If user exists, redirect to `/quiz/start`; otherwise, sign out and show error
+
+### Security Rules Testing
+
+Before deploying production rules:
+```bash
+# Test rules locally with emulator
+firebase emulators:start --only firestore
+
+# Deploy rules without hosting
+firebase deploy --only firestore:rules,storage:rules
+```

@@ -1,0 +1,183 @@
+// Design System Variables
+
+// =============================================================================
+// Color Palette
+// =============================================================================
+
+// Primary Colors (Modern Blue)
+$primary: #2563eb;
+$primary-light: #60a5fa;
+$primary-dark: #1e40af;
+$primary-lightest: #dbeafe;
+
+// Accent Colors (Warm Amber)
+$accent: #f59e0b;
+$accent-light: #fbbf24;
+$accent-dark: #d97706;
+
+// Semantic Colors
+$success: #10b981;          // Green for correct answers
+$success-light: #34d399;
+$success-dark: #059669;
+$error: #ef4444;            // Red for errors
+$error-light: #f87171;
+$error-dark: #dc2626;
+$warning: #f59e0b;          // Amber for warnings
+$info: #3b82f6;             // Blue for info
+
+// Surface Colors
+$surface: #ffffff;
+$surface-variant: #f8fafc;  // Very light gray
+$surface-hover: #f1f5f9;
+$background: #f1f5f9;       // Light blue-gray background
+$overlay: rgba(15, 23, 42, 0.5);
+
+// Text Colors
+$text-primary: #0f172a;     // Dark slate
+$text-secondary: #64748b;   // Medium slate
+$text-disabled: #cbd5e1;    // Light slate
+$text-on-primary: #ffffff;
+$text-on-dark: #ffffff;
+
+// Border & Divider Colors
+$border: #e2e8f0;           // Light border
+$border-dark: #cbd5e1;
+$divider: #e2e8f0;
+
+// Shadow Colors
+$shadow-sm: rgba(15, 23, 42, 0.05);
+$shadow: rgba(15, 23, 42, 0.1);
+$shadow-md: rgba(15, 23, 42, 0.15);
+$shadow-lg: rgba(15, 23, 42, 0.2);
+
+// =============================================================================
+// Typography
+// =============================================================================
+
+// Font Families
+$font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+$font-family-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', monospace;
+
+// Font Sizes
+$text-xs: 0.75rem;      // 12px - Labels, captions
+$text-sm: 0.875rem;     // 14px - Body small, secondary text
+$text-base: 1rem;       // 16px - Body text, default
+$text-lg: 1.125rem;     // 18px - Emphasis, large body
+$text-xl: 1.25rem;      // 20px - Card titles, small headings
+$text-2xl: 1.5rem;      // 24px - Section headers
+$text-3xl: 1.875rem;    // 30px - Page headers
+$text-4xl: 2.25rem;     // 36px - Large headers
+
+// Font Weights
+$font-normal: 400;
+$font-medium: 500;
+$font-semibold: 600;
+$font-bold: 700;
+$font-extrabold: 800;
+
+// Line Heights
+$leading-none: 1;
+$leading-tight: 1.25;
+$leading-snug: 1.375;
+$leading-normal: 1.5;
+$leading-relaxed: 1.625;
+$leading-loose: 2;
+
+// Letter Spacing
+$tracking-tighter: -0.05em;
+$tracking-tight: -0.025em;
+$tracking-normal: 0;
+$tracking-wide: 0.025em;
+$tracking-wider: 0.05em;
+$tracking-widest: 0.1em;
+
+// =============================================================================
+// Spacing System (8px base)
+// =============================================================================
+
+$space-0: 0;
+$space-1: 0.25rem;      // 4px
+$space-2: 0.5rem;       // 8px
+$space-3: 0.75rem;      // 12px
+$space-4: 1rem;         // 16px
+$space-5: 1.25rem;      // 20px
+$space-6: 1.5rem;       // 24px
+$space-7: 1.75rem;      // 28px
+$space-8: 2rem;         // 32px
+$space-10: 2.5rem;      // 40px
+$space-12: 3rem;        // 48px
+$space-16: 4rem;        // 64px
+$space-20: 5rem;        // 80px
+$space-24: 6rem;        // 96px
+
+// =============================================================================
+// Border Radius
+// =============================================================================
+
+$radius-none: 0;
+$radius-sm: 0.25rem;    // 4px
+$radius: 0.375rem;      // 6px
+$radius-md: 0.5rem;     // 8px
+$radius-lg: 0.75rem;    // 12px
+$radius-xl: 1rem;       // 16px
+$radius-2xl: 1.5rem;    // 24px
+$radius-full: 9999px;   // Full rounded
+
+// =============================================================================
+// Box Shadows
+// =============================================================================
+
+$shadow-sm: 0 1px 2px 0 $shadow-sm;
+$shadow-default: 0 1px 3px 0 $shadow;
+$shadow-md: 0 4px 6px -1px $shadow-sm, 0 2px 4px -1px $shadow;
+$shadow-lg: 0 10px 15px -3px $shadow-md, 0 4px 6px -2px $shadow;
+$shadow-xl: 0 20px 25px -5px $shadow-md, 0 10px 10px -5px $shadow;
+$shadow-2xl: 0 25px 50px -12px $shadow-lg;
+$shadow-inner: inset 0 2px 4px 0 $shadow;
+
+// =============================================================================
+// Transitions
+// =============================================================================
+
+$transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-slower: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+// Easing functions
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+// =============================================================================
+// Z-Index Scale
+// =============================================================================
+
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;
+
+// =============================================================================
+// Breakpoints
+// =============================================================================
+
+$breakpoint-xs: 0;
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+// =============================================================================
+// Container Max Widths
+// =============================================================================
+
+$container-sm: 640px;
+$container-md: 768px;
+$container-lg: 1024px;
+$container-xl: 1280px;
+$container-2xl: 1400px;

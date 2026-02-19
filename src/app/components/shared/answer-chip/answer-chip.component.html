@@ -1,0 +1,7 @@
+<div class="answer-chip" [class.correct]="isCorrect" [class.incorrect]="!isCorrect" [class.clickable]="clickable">
+  <mat-icon class="chip-icon">
+    {{ isCorrect ? 'check_circle' : 'cancel' }}
+  </mat-icon>
+  <span class="chip-text">{{ text }}</span>
+  <mat-icon *ngIf="imageUrl" class="chip-image-indicator" inline>image</mat-icon>
+</div>

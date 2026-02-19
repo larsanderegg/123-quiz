@@ -1,0 +1,461 @@
+@use '@angular/material' as mat;
+@import '../../../styles/variables';
+@import '../../../styles/mixins';
+
+// =============================================================================
+// Layout
+// =============================================================================
+
+// Split layout for form and preview
+.question-form-with-preview {
+  display: flex;
+  gap: $space-6;
+  padding: $space-6;
+  max-width: 1600px;
+  margin: 0 auto;
+  position: relative;
+
+  .form-section {
+    flex: 1 1 60%;
+    min-width: 600px;
+    max-width: 900px;
+  }
+
+  .preview-section {
+    flex: 1 1 40%;
+    min-width: 400px;
+    max-width: 600px;
+    position: sticky;
+    top: $space-6;
+    height: fit-content;
+
+    mat-card {
+      height: 100%;
+    }
+
+    mat-card-header {
+      @include flex-between;
+
+      .preview-toggle {
+        margin-left: auto;
+      }
+    }
+
+    mat-card-content {
+      @include flex-column;
+      gap: $space-4;
+    }
+  }
+
+  .preview-fab {
+    position: fixed;
+    bottom: $space-6;
+    right: $space-6;
+    z-index: $z-index-fixed;
+  }
+
+  // Responsive: stack on smaller screens
+  @media (max-width: $breakpoint-lg) {
+    flex-direction: column;
+
+    .form-section,
+    .preview-section {
+      flex: 1 1 100%;
+      min-width: unset;
+      max-width: 100%;
+    }
+
+    .preview-section {
+      position: static;
+    }
+  }
+}
+
+// =============================================================================
+// Card Header
+// =============================================================================
+
+mat-card-header {
+  position: relative;
+}
+
+.form-loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+// =============================================================================
+// Expansion Panels
+// =============================================================================
+
+mat-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.section-panel {
+  @include card;
+  box-shadow: $shadow-sm !important;
+
+  &.mat-expanded {
+    box-shadow: $shadow-md !important;
+  }
+
+  &.optional-panel {
+    .mat-expansion-panel-header {
+      background: $surface-variant;
+    }
+  }
+
+  .mat-expansion-panel-header {
+    padding: $space-4 $space-6 !important;
+    transition: all $transition-base;
+
+    &:hover:not(.mat-expanded) {
+      background: $surface-hover !important;
+    }
+
+    .mat-panel-title {
+      @include flex-start;
+      gap: $space-3;
+      font-size: $text-lg;
+      font-weight: $font-semibold;
+      color: $text-primary;
+
+      .panel-icon {
+        color: $primary;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .answer-count-badge {
+        margin-left: $space-2;
+        padding: $space-1 $space-3;
+        background: $accent-light;
+        color: darken($accent, 20%);
+        font-size: $text-xs;
+        font-weight: $font-semibold;
+        border-radius: $radius-full;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .optional-badge {
+        margin-left: $space-2;
+        padding: $space-1 $space-2;
+        background: $surface-variant;
+        color: $text-secondary;
+        font-size: $text-xs;
+        font-weight: $font-medium;
+        border-radius: $radius;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .mat-panel-description {
+      font-size: $text-sm;
+      color: $text-secondary;
+    }
+  }
+
+  .mat-expansion-panel-body {
+    padding: 0 !important;
+  }
+}
+
+// =============================================================================
+// Section Content
+// =============================================================================
+
+.section-content {
+  padding: $space-6;
+  background: $surface;
+
+  .section-description {
+    margin: 0 0 $space-4 0;
+    font-size: $text-sm;
+    color: $text-secondary;
+    line-height: $leading-relaxed;
+  }
+
+  .subsection-title {
+    margin: $space-4 0 $space-3 0;
+    font-size: $text-sm;
+    font-weight: $font-semibold;
+    color: $text-primary;
+  }
+}
+
+// =============================================================================
+// Form Fields
+// =============================================================================
+
+.full-width {
+  width: 100%;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-4;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .order-field {
+    grid-column: span 1;
+    max-width: 150px;
+  }
+
+  .round-field {
+    flex: 1;
+  }
+}
+
+mat-form-field {
+  margin-bottom: $space-4;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// =============================================================================
+// Answer List
+// =============================================================================
+
+.answer-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.answer-group {
+  @include card;
+  @include card-hover;
+  display: flex;
+  gap: $space-3;
+  padding: $space-4;
+  cursor: move;
+
+  &.cdk-drag-preview {
+    box-shadow: $shadow-lg;
+    opacity: 0.9;
+  }
+
+  &.cdk-drag-animating {
+    transition: transform 300ms $ease-out;
+  }
+
+  .drag-handle {
+    @include flex-center;
+    cursor: grab;
+    color: $text-secondary;
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .answer-content-wrapper {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .answer-main-row {
+    @include flex-start;
+    gap: $space-3;
+    margin-bottom: $space-3;
+
+    .answer-text-field {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .correct-checkbox {
+      flex-shrink: 0;
+      margin-top: $space-2;
+    }
+  }
+
+  .answer-image-row {
+    @include flex-start;
+    gap: $space-3;
+    flex-wrap: wrap;
+
+    .file-input {
+      display: none;
+    }
+
+    .upload-button {
+      flex-shrink: 0;
+    }
+
+    .image-preview-container {
+      position: relative;
+      display: inline-block;
+      border: 1px solid $border;
+      border-radius: $radius;
+      padding: $space-1;
+      background: $surface-variant;
+
+      .image-preview {
+        display: block;
+        max-height: 80px;
+        max-width: 120px;
+        object-fit: contain;
+        border-radius: $radius-sm;
+      }
+
+      .clear-image-button {
+        position: absolute;
+        top: -$space-2;
+        right: -$space-2;
+        background: $surface;
+        box-shadow: $shadow-sm;
+        width: 28px;
+        height: 28px;
+
+        mat-icon {
+          font-size: 18px;
+        }
+
+        &:hover {
+          background: $error-light;
+          color: white;
+        }
+      }
+    }
+  }
+
+  .remove-button {
+    flex-shrink: 0;
+    align-self: flex-start;
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:disabled {
+      color: $text-disabled;
+    }
+  }
+}
+
+// Drag & drop placeholder
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drop-list-dragging .answer-group:not(.cdk-drag-placeholder) {
+  transition: transform 300ms $ease-out;
+}
+
+// =============================================================================
+// Image Upload Section
+// =============================================================================
+
+.image-upload-section {
+  margin-top: $space-4;
+
+  .file-input {
+    display: none;
+  }
+
+  .upload-button {
+    margin-bottom: $space-3;
+  }
+
+  .image-preview-container {
+    position: relative;
+    display: inline-block;
+    border: 1px solid $border;
+    border-radius: $radius;
+    padding: $space-2;
+    background: $surface-variant;
+
+    .image-preview {
+      display: block;
+      max-height: 200px;
+      max-width: 300px;
+      object-fit: contain;
+      border-radius: $radius-sm;
+    }
+
+    .clear-image-button {
+      position: absolute;
+      top: -$space-2;
+      right: -$space-2;
+      background: $surface;
+      box-shadow: $shadow-sm;
+      width: 32px;
+      height: 32px;
+
+      mat-icon {
+        font-size: 20px;
+      }
+
+      &:hover {
+        background: $error-light;
+        color: white;
+      }
+    }
+  }
+}
+
+// =============================================================================
+// Actions
+// =============================================================================
+
+.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  background: $surface;
+  border-top: 1px solid $border;
+  padding: $space-4 $space-6 !important;
+  box-shadow: 0 -2px 8px $shadow-sm;
+  z-index: $z-index-sticky;
+  @include flex-end;
+  gap: $space-3;
+}
+
+// =============================================================================
+// Legacy Styles (Deprecated - to be removed)
+// =============================================================================
+
+.question-form-container {
+  padding: $space-6;
+  max-width: 900px;
+  margin: $space-6 auto;
+}
+
+.answers-heading {
+  margin-top: $space-8;
+  margin-bottom: $space-4;
+  border-top: 1px solid $divider;
+  padding-top: $space-4;
+  @include flex-start;
+  gap: $space-3;
+
+  .answer-count-badge {
+    padding: $space-1 $space-3;
+    background: $accent-light;
+    color: darken($accent, 20%);
+    font-size: $text-xs;
+    font-weight: $font-semibold;
+    border-radius: $radius-full;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}

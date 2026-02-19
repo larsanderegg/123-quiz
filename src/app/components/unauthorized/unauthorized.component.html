@@ -1,0 +1,39 @@
+<div class="unauthorized-container">
+  <mat-card class="unauthorized-card">
+    <mat-card-header>
+      <div class="header-content">
+        <mat-icon class="warning-icon">block</mat-icon>
+        <mat-card-title>Access Denied</mat-card-title>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="content">
+        <p class="message">
+          You don't have permission to access this page. Admin access is required to manage questions and rounds.
+        </p>
+
+        <p class="info-text">
+          If you believe you should have access, please contact an administrator.
+        </p>
+
+        <div class="actions">
+          <button
+            mat-raised-button
+            color="primary"
+            routerLink="/quiz/start">
+            <mat-icon>home</mat-icon>
+            Back to Quiz
+          </button>
+
+          <button
+            mat-stroked-button
+            (click)="authService.signOut()">
+            <mat-icon>logout</mat-icon>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

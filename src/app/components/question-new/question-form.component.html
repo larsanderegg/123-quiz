@@ -1,0 +1,240 @@
+<div class="question-form-with-preview">
+  <div class="form-section">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ isEditMode ? 'Edit Question' : 'Add New Question' }}</mat-card-title>
+        <mat-progress-bar *ngIf="isLoading" mode="indeterminate" color="primary"
+                          class="form-loading-bar"></mat-progress-bar>
+      </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
+
+        <mat-accordion multi="true">
+
+          <!-- Basic Information Panel (Always Expanded) -->
+          <mat-expansion-panel [expanded]="true" [disabled]="true" class="section-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="panel-icon">info</mat-icon>
+                Basic Information
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="section-content">
+              <!-- Question Text -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Question Text</mat-label>
+                <textarea matInput formControlName="text" required
+                          cdkTextareaAutosize
+                          cdkAutosizeMinRows="2"
+                          cdkAutosizeMaxRows="4"></textarea>
+                <mat-error *ngIf="questionForm.controls['text'].hasError('required')">Question text is required</mat-error>
+              </mat-form-field>
+
+              <!-- Category and Introduction -->
+              <div class="field-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Category</mat-label>
+                  <input matInput formControlName="category" required>
+                  <mat-error *ngIf="questionForm.controls['category'].hasError('required')">Category is required</mat-error>
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Introduction</mat-label>
+                <textarea matInput
+                          formControlName="introduction"
+                          required
+                          cdkTextareaAutosize
+                          cdkAutosizeMinRows="2"
+                          cdkAutosizeMaxRows="4"
+                          placeholder="Introduction text shown before the question"></textarea>
+                <mat-error *ngIf="questionForm.controls['introduction'].hasError('required')">Introduction is required</mat-error>
+              </mat-form-field>
+
+              <!-- Order and Round -->
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="order-field">
+                  <mat-label>Order</mat-label>
+                  <input matInput type="number" formControlName="order" required min="0">
+                  <mat-hint>Display order in the round</mat-hint>
+                  <mat-error *ngIf="questionForm.controls['order']?.hasError('required')">Required</mat-error>
+                  <mat-error *ngIf="questionForm.controls['order']?.hasError('min')">Must be 0 or greater</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="round-field">
+                  <mat-label>Round</mat-label>
+                  <mat-select formControlName="roundId">
+                    <mat-option [value]="null">-- No Round --</mat-option>
+                    <mat-option *ngFor="let round of allRounds" [value]="round.id">{{ round.name }}</mat-option>
+                  </mat-select>
+                  <mat-hint>Optional: Assign to a round</mat-hint>
+                </mat-form-field>
+              </div>
+            </div>
+          </mat-expansion-panel>
+
+          <!-- Answers Panel (Always Expanded) -->
+          <mat-expansion-panel [expanded]="true" [disabled]="true" class="section-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="panel-icon">list</mat-icon>
+                Answers
+                <span class="answer-count-badge">3 Required</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="section-content">
+              <p class="section-description">
+                Drag to reorder answers. Mark exactly one as correct.
+              </p>
+
+              <div cdkDropList [cdkDropListData]="answers.controls" (cdkDropListDropped)="drop($event)"
+                   formArrayName="answers" class="answer-list-container">
+                <div *ngFor="let answer of answers.controls; let i = index" [formGroupName]="i" cdkDrag class="answer-group">
+                  <div class="drag-handle" cdkDragHandle>
+                    <mat-icon>drag_indicator</mat-icon>
+                  </div>
+                  <div class="answer-content-wrapper">
+                    <div class="answer-main-row">
+                      <mat-form-field appearance="outline" class="answer-text-field">
+                        <mat-label>Answer {{ i + 1 }}</mat-label>
+                        <input matInput formControlName="text" required>
+                        <mat-error *ngIf="answers.controls[i].get('text')?.hasError('required')">Required</mat-error>
+                      </mat-form-field>
+                      <mat-checkbox formControlName="isCorrect" class="correct-checkbox">Correct?</mat-checkbox>
+                    </div>
+                    <div class="answer-image-row">
+                      <input type="file" accept="image/png, image/jpeg, image/gif" #answerFileInput
+                             (change)="onAnswerFileSelected($event, i)" [id]="'answer-file-input-' + i" class="file-input">
+                      <button mat-stroked-button type="button" (click)="answerFileInput.click()" class="upload-button">
+                        <mat-icon>upload_file</mat-icon>
+                        Upload Image
+                      </button>
+                      <div *ngIf="answerImagePreviews.get(i)" class="image-preview-container">
+                        <img [src]="answerImagePreviews.get(i)" alt="Answer Image Preview" class="image-preview">
+                        <button mat-icon-button type="button" (click)="clearAnswerImage(i, 'answer-file-input-' + i)"
+                                class="clear-image-button" aria-label="Clear answer image">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Remove button disabled with tooltip -->
+                  <button mat-icon-button
+                          type="button"
+                          [disabled]="true"
+                          [matTooltip]="'Questions must have exactly 3 answers'"
+                          class="remove-button"
+                          aria-label="Remove answer (disabled)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+
+          <!-- Explanation Panel (Collapsible, Optional) -->
+          <mat-expansion-panel class="section-panel optional-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="panel-icon">description</mat-icon>
+                Explanation
+                <span class="optional-badge">Optional</span>
+              </mat-panel-title>
+              <mat-panel-description>
+                Add an explanation and image to help understand the answer
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="section-content">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Explanation Text</mat-label>
+                <textarea matInput
+                          formControlName="explanation"
+                          cdkTextareaAutosize
+                          cdkAutosizeMinRows="3"
+                          cdkAutosizeMaxRows="8"
+                          placeholder="Explain why the answer is correct (optional)"></textarea>
+              </mat-form-field>
+
+              <div class="image-upload-section">
+                <h4 class="subsection-title">Explanation Image</h4>
+                <input type="file" accept="image/png, image/jpeg, image/gif"
+                       #explanationFileInput
+                       (change)="onExplanationFileSelected($event)"
+                       id="explanation-file-input" class="file-input">
+
+                <button mat-stroked-button type="button" (click)="explanationFileInput.click()" class="upload-button">
+                  <mat-icon>upload_file</mat-icon>
+                  Upload Image
+                </button>
+
+                <div *ngIf="explanationImagePreview" class="image-preview-container">
+                  <img [src]="explanationImagePreview" alt="Explanation Image Preview" class="image-preview">
+                  <button mat-icon-button type="button" (click)="clearExplanationImage('explanation-file-input')"
+                          class="clear-image-button" aria-label="Clear explanation image">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+
+        </mat-accordion>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end" class="sticky-actions">
+      <button mat-button type="button" (click)="cancel()" [disabled]="isLoading">Cancel</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="questionForm.invalid || isLoading"
+              (click)="onSubmit()">
+        <span *ngIf="!isLoading">{{ isEditMode ? 'Update Question' : 'Add Question' }}</span>
+        <span *ngIf="isLoading">{{ isEditMode ? 'Updating...' : 'Adding...' }}</span>
+      </button>
+    </mat-card-actions>
+
+  </mat-card>
+  </div>
+
+  <!-- Preview Section -->
+  <div class="preview-section" *ngIf="showPreview">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Preview</mat-card-title>
+        <button mat-icon-button (click)="togglePreview()" matTooltip="Hide preview" class="preview-toggle">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <app-quiz-preview
+          [question]="previewQuestion"
+          [answers]="previewAnswers"
+          [currentStep]="currentPreviewStep"
+          [backgroundImage]="null"
+          [previewMode]="true">
+        </app-quiz-preview>
+
+        <app-preview-controls
+          [currentStep]="currentPreviewStep"
+          [totalSteps]="8"
+          (stepChange)="onPreviewStepChange($event)">
+        </app-preview-controls>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Show preview button when hidden -->
+  <button *ngIf="!showPreview"
+          mat-fab
+          color="accent"
+          (click)="togglePreview()"
+          matTooltip="Show preview"
+          class="preview-fab">
+    <mat-icon>visibility</mat-icon>
+  </button>
+
+</div>

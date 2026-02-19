@@ -1,0 +1,14 @@
+<div class="skeleton-container">
+  <div
+    *ngFor="let _ of skeletonArray"
+    class="skeleton"
+    [ngClass]="{
+      'skeleton-text': type === 'text',
+      'skeleton-title': type === 'title',
+      'skeleton-card': type === 'card',
+      'skeleton-circle': type === 'circle' || rounded
+    }"
+    [style.height]="height !== 'auto' ? height : null"
+    [style.width]="width !== '100%' ? width : null">
+  </div>
+</div>

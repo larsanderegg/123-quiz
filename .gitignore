@@ -58,3 +58,4 @@ backend/dist/
 
 # Shared
 shared/dist/
+/.angular/

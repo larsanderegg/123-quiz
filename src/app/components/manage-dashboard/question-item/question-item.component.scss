@@ -1,0 +1,141 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.question-item {
+  @include card;
+  @include card-hover;
+  display: flex;
+  gap: $space-4;
+  padding: $space-4;
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  .question-order {
+    flex-shrink: 0;
+
+    .order-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: $primary-lightest;
+      color: $primary-dark;
+      font-size: $text-sm;
+      font-weight: $font-bold;
+      border-radius: $radius-full;
+    }
+  }
+
+  .question-content {
+    flex: 1;
+    min-width: 0;
+
+    .question-header {
+      @include flex-start;
+      gap: $space-3;
+      margin-bottom: $space-3;
+      flex-wrap: wrap;
+
+      .question-text {
+        flex: 1;
+        min-width: 200px;
+        margin: 0;
+        font-size: $text-base;
+        font-weight: $font-semibold;
+        color: $text-primary;
+        line-height: $leading-snug;
+      }
+
+      .category-badge {
+        flex-shrink: 0;
+        padding: $space-1 $space-3;
+        background: $surface-variant;
+        color: $text-secondary;
+        font-size: $text-xs;
+        font-weight: $font-medium;
+        border-radius: $radius-full;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .question-details {
+      margin-bottom: $space-3;
+      padding: $space-3;
+      background: $surface-variant;
+      border-radius: $radius;
+
+      .detail-item {
+        @include flex-start;
+        gap: $space-2;
+        margin-bottom: $space-2;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .detail-icon {
+          flex-shrink: 0;
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          color: $text-secondary;
+          margin-top: 2px;
+        }
+
+        .detail-content {
+          flex: 1;
+          min-width: 0;
+
+          .detail-label {
+            display: inline;
+            font-size: $text-xs;
+            font-weight: $font-semibold;
+            color: $text-secondary;
+            margin-right: $space-2;
+          }
+
+          .detail-text {
+            display: inline;
+            font-size: $text-xs;
+            color: $text-primary;
+            line-height: $leading-relaxed;
+          }
+        }
+      }
+    }
+
+    .answer-chips {
+      @include flex-start;
+      gap: $space-2;
+      flex-wrap: wrap;
+    }
+  }
+
+  .question-actions {
+    flex-shrink: 0;
+    @include flex-start;
+    gap: $space-1;
+    align-self: flex-start;
+  }
+}
+
+// Animation for expand/collapse
+.question-details {
+  animation: fadeIn $transition-base;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

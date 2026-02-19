@@ -1,0 +1,66 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.answer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  border-radius: $radius-md;
+  border: 1.5px solid;
+  transition: all $transition-fast;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: $shadow-sm;
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &.correct {
+    background: rgba($success, 0.1);
+    border-color: $success;
+    color: $success-dark;
+
+    .chip-icon {
+      color: $success;
+    }
+  }
+
+  &.incorrect {
+    background: rgba($text-secondary, 0.08);
+    border-color: $text-secondary;
+    color: $text-secondary;
+
+    .chip-icon {
+      color: $text-secondary;
+      opacity: 0.7;
+    }
+  }
+
+  .chip-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .chip-text {
+    @include truncate;
+    max-width: 200px;
+  }
+
+  .chip-image-indicator {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+  }
+}

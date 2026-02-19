@@ -1,0 +1,82 @@
+@use '@angular/material' as mat; // Import Material theming functions if needed
+
+.app-toolbar {
+  // Ensure content spreads out
+  .toolbar-content {
+    display: flex;
+    justify-content: space-between; // Puts space between title and links
+    align-items: center;
+    width: 100%;
+    padding: 0 16px; // Add some horizontal padding
+    box-sizing: border-box;
+  }
+
+  .app-title {
+    display: flex;
+    align-items: center;
+    gap: 8px; // Space between icon and text
+    color: inherit; // Inherit color from toolbar
+    text-decoration: none; // Remove underline from link
+    font-size: 1.25rem; // Adjust title size
+    font-weight: 500;
+
+    .title-icon {
+      vertical-align: middle; // Align icon nicely
+    }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 8px;
+
+    button {
+      // Default button style
+      font-weight: 500; // Make nav links slightly bolder
+      transition: background-color 0.2s ease-in-out;
+      border-radius: 4px; // Optional rounding on hover/active
+
+      // Style for the active link
+      &.active-nav-link {
+        // Use a subtle background or underline to indicate active state
+        background-color: rgba(255, 255, 255, 0.15);
+        // Or: border-bottom: 3px solid mat.get-color-from-palette(mat.$amber-palette, 400); // Example accent underline
+      }
+
+      &:not(.active-nav-link):hover {
+        background-color: rgba(255, 255, 255, 0.08); // Hover effect
+      }
+    }
+  }
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 16px;
+
+    .user-name {
+      color: white;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  // Optional spacer if needed for more complex layouts
+  // .toolbar-spacer {
+  //   flex: 1 1 auto;
+  // }
+}
+
+// Styles for fullscreen player mode (keep from previous step)
+main.fullscreen-player {
+  height: 100vh;
+  overflow: hidden;
+}

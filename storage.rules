@@ -1,0 +1,89 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function userExists() {
+      return isAuthenticated() &&
+             firestore.exists(/databases/(default)/documents/users/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return userExists() &&
+             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function isValidImageType() {
+      return request.resource.contentType.matches('image/(jpeg|jpg|png|gif|webp)');
+    }
+
+    function isValidAudioType() {
+      return request.resource.contentType.matches('audio/(mpeg|mp3|wav|ogg|webm|aac|m4a)');
+    }
+
+    function isValidImageSize() {
+      return request.resource.size <= 5 * 1024 * 1024;
+    }
+
+    function isValidAudioSize() {
+      return request.resource.size <= 20 * 1024 * 1024;
+    }
+
+    // ============================================================
+    // IMAGE FILES
+    // ============================================================
+
+    match /images/questions/{filename} {
+      allow read: if userExists();
+      allow create, update: if isAdmin() && isValidImageType() && isValidImageSize();
+      allow delete: if isAdmin();
+    }
+
+    match /images/answers/{filename} {
+      allow read: if userExists();
+      allow create, update: if isAdmin() && isValidImageType() && isValidImageSize();
+      allow delete: if isAdmin();
+    }
+
+    match /images/rounds/{filename} {
+      allow read: if userExists();
+      allow create, update: if isAdmin() && isValidImageType() && isValidImageSize();
+      allow delete: if isAdmin();
+    }
+
+    match /images/{allPaths=**} {
+      allow read: if userExists();
+      allow write: if isAdmin() && isValidImageType() && isValidImageSize();
+    }
+
+    // ============================================================
+    // AUDIO FILES
+    // ============================================================
+
+    match /audio/rounds/{filename} {
+      allow read: if userExists();
+      allow create, update: if isAdmin() && isValidAudioType() && isValidAudioSize();
+      allow delete: if isAdmin();
+    }
+
+    match /audio/{allPaths=**} {
+      allow read: if userExists();
+      allow write: if isAdmin() && isValidAudioType() && isValidAudioSize();
+    }
+
+    // ============================================================
+    // DENY ALL OTHER PATHS
+    // ============================================================
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

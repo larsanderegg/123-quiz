@@ -1,0 +1,81 @@
+<div class="round-section" [class.expanded]="expanded">
+
+  <!-- Round Header -->
+  <div class="round-header" (click)="onToggle()">
+    <mat-icon class="expand-icon">
+      {{ expanded ? 'expand_more' : 'chevron_right' }}
+    </mat-icon>
+
+    <div class="round-info">
+      <h2 class="round-name">{{ round.name }}</h2>
+      <div class="round-meta">
+        <span class="meta-item">
+          <mat-icon inline>help_outline</mat-icon>
+          {{ round.questions.length }} question{{ round.questions.length !== 1 ? 's' : '' }}
+        </span>
+        <span class="meta-item" *ngIf="round.audioUrl">
+          <mat-icon inline>audiotrack</mat-icon>
+          Audio
+        </span>
+        <span class="meta-item" *ngIf="round.backgroundImageUrl">
+          <mat-icon inline>image</mat-icon>
+          Background
+        </span>
+        <span class="meta-item" *ngIf="round.theme">
+          <mat-icon inline>palette</mat-icon>
+          Custom theme
+        </span>
+      </div>
+    </div>
+
+    <div class="round-actions" (click)="$event.stopPropagation()">
+      <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Round actions">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onEditRound()">
+          <mat-icon>edit</mat-icon>
+          <span>Edit Round</span>
+        </button>
+        <button mat-menu-item (click)="onAddQuestion()">
+          <mat-icon>add</mat-icon>
+          <span>Add Question</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="onDeleteRound()">
+          <mat-icon color="warn">delete</mat-icon>
+          <span>Delete Round</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <!-- Questions List (expandable) -->
+  <div class="questions-list" *ngIf="expanded">
+    <app-empty-state
+      *ngIf="round.questions.length === 0"
+      icon="help_outline"
+      title="No questions yet"
+      [description]="'Add questions to the ' + round.name + ' round.'"
+      actionLabel="Add Question"
+      [action]="onAddQuestion.bind(this)">
+    </app-empty-state>
+
+    <div class="questions-container" *ngIf="round.questions.length > 0">
+      <app-question-item
+        *ngFor="let question of round.questions; trackBy: trackByQuestionId"
+        [question]="question"
+        [answers]="getAnswersForQuestion(question)"
+        (edit)="editQuestion.emit($event)"
+        (delete)="deleteQuestion.emit($event)"
+        (duplicate)="duplicateQuestion.emit($event)">
+      </app-question-item>
+
+      <button mat-stroked-button color="primary" class="add-question-btn" (click)="onAddQuestion()">
+        <mat-icon>add</mat-icon>
+        Add Question to {{ round.name }}
+      </button>
+    </div>
+  </div>
+
+</div>

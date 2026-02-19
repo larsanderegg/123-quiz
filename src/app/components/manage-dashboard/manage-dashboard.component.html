@@ -1,0 +1,129 @@
+<div class="manage-dashboard">
+
+  <!-- Toolbar -->
+  <mat-toolbar color="primary" class="dashboard-toolbar">
+    <div class="toolbar-content">
+      <div class="toolbar-header">
+        <mat-icon class="toolbar-icon">dashboard</mat-icon>
+        <h1 class="toolbar-title">Manage Quiz Content</h1>
+      </div>
+
+      <div class="toolbar-actions">
+        <button mat-raised-button color="accent" (click)="onAddQuestion()">
+          <mat-icon>add</mat-icon>
+          Add Question
+        </button>
+        <button mat-raised-button (click)="onAddRound()">
+          <mat-icon>add</mat-icon>
+          Add Round
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <!-- Filters & Search -->
+  <div class="filters-bar">
+    <div class="filters-content">
+      <!-- Search -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search questions</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Search by question text, category..."
+          autocomplete="off">
+        <mat-icon matPrefix>search</mat-icon>
+        <button
+          mat-icon-button
+          matSuffix
+          *ngIf="searchTerm"
+          (click)="onSearchChange('')"
+          matTooltip="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Round Filter -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Filter by round</mat-label>
+        <mat-select
+          [(ngModel)]="selectedRoundFilter"
+          (ngModelChange)="onRoundFilterChange($event)">
+          <mat-option value="all">All Rounds</mat-option>
+          <mat-option *ngFor="let round of availableRounds" [value]="round.id">
+            {{ round.name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>filter_list</mat-icon>
+      </mat-form-field>
+
+      <!-- View Controls -->
+      <div class="view-controls">
+        <button mat-stroked-button (click)="expandAll()" matTooltip="Expand all rounds">
+          <mat-icon>unfold_more</mat-icon>
+          Expand All
+        </button>
+        <button mat-stroked-button (click)="collapseAll()" matTooltip="Collapse all rounds">
+          <mat-icon>unfold_less</mat-icon>
+          Collapse All
+        </button>
+        <button
+          mat-stroked-button
+          *ngIf="searchTerm || selectedRoundFilter !== 'all'"
+          (click)="clearFilters()"
+          matTooltip="Clear all filters">
+          <mat-icon>clear_all</mat-icon>
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+
+    <!-- Loading State -->
+    <div *ngIf="loading$ | async" class="loading-container">
+      <app-loading-skeleton type="card" [height]="'200px'" [count]="3"></app-loading-skeleton>
+    </div>
+
+    <!-- Empty State - No Data -->
+    <app-empty-state
+      *ngIf="!(loading$ | async) && (roundsWithQuestions$ | async)?.length === 0"
+      icon="dashboard"
+      title="No quiz content yet"
+      description="Get started by creating your first round or adding questions."
+      actionLabel="Add Round"
+      [action]="onAddRound.bind(this)">
+    </app-empty-state>
+
+    <!-- Empty State - No Search Results -->
+    <app-empty-state
+      *ngIf="!(loading$ | async) && ((roundsWithQuestions$ | async)?.length || 0) > 0 && ((filteredRounds$ | async)?.length || 0) === 0"
+      icon="search_off"
+      title="No results found"
+      description="Try adjusting your search or filters."
+      actionLabel="Clear Filters"
+      [action]="clearFilters.bind(this)">
+    </app-empty-state>
+
+    <!-- Rounds List -->
+    <div class="rounds-container" *ngIf="!(loading$ | async) && ((filteredRounds$ | async)?.length || 0) > 0">
+      <app-round-section
+        *ngFor="let round of (filteredRounds$ | async); trackBy: trackByRoundId"
+        [round]="round"
+        [expanded]="isRoundExpanded(round.id)"
+        (toggle)="toggleRound(round.id)"
+        (editRound)="onEditRound($event)"
+        (deleteRound)="onDeleteRound($event)"
+        (addQuestion)="onAddQuestion($event)"
+        (editQuestion)="onEditQuestion($event)"
+        (deleteQuestion)="onDeleteQuestion($event)"
+        (duplicateQuestion)="onDuplicateQuestion($event)">
+      </app-round-section>
+    </div>
+
+  </div>
+
+</div>

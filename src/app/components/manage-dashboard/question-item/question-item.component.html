@@ -1,0 +1,80 @@
+<div class="question-item">
+
+  <div class="question-order">
+    <span class="order-badge">{{ question.order !== undefined ? question.order + 1 : '-' }}</span>
+  </div>
+
+  <div class="question-content">
+    <div class="question-header">
+      <h3 class="question-text">{{ question.text }}</h3>
+      <span class="category-badge">{{ question.category }}</span>
+    </div>
+
+    <div class="question-details" *ngIf="expanded">
+      <div class="detail-item" *ngIf="question.introduction">
+        <mat-icon inline class="detail-icon">info</mat-icon>
+        <div class="detail-content">
+          <span class="detail-label">Introduction:</span>
+          <span class="detail-text">{{ question.introduction }}</span>
+        </div>
+      </div>
+
+      <div class="detail-item" *ngIf="question.explanation">
+        <mat-icon inline class="detail-icon">description</mat-icon>
+        <div class="detail-content">
+          <span class="detail-label">Explanation:</span>
+          <span class="detail-text">{{ question.explanation }}</span>
+        </div>
+      </div>
+
+      <div class="detail-item" *ngIf="question.imageUrl">
+        <mat-icon inline class="detail-icon">image</mat-icon>
+        <div class="detail-content">
+          <span class="detail-label">Has explanation image</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="answer-chips">
+      <app-answer-chip
+        *ngFor="let answer of answers; let i = index"
+        [text]="answer.text"
+        [isCorrect]="answer.isCorrect"
+        [imageUrl]="answer.imageUrl">
+      </app-answer-chip>
+    </div>
+  </div>
+
+  <div class="question-actions">
+    <button mat-icon-button
+            [matTooltip]="expanded ? 'Show less' : 'Show more'"
+            (click)="toggleExpand()">
+      <mat-icon>{{ expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </button>
+
+    <button mat-icon-button
+            matTooltip="Edit question"
+            color="primary"
+            (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+
+    <button mat-icon-button
+            [matMenuTriggerFor]="menu"
+            matTooltip="More actions">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="onDuplicate()">
+        <mat-icon>content_copy</mat-icon>
+        <span>Duplicate</span>
+      </button>
+      <button mat-menu-item (click)="onDelete()">
+        <mat-icon color="warn">delete</mat-icon>
+        <span>Delete</span>
+      </button>
+    </mat-menu>
+  </div>
+
+</div>

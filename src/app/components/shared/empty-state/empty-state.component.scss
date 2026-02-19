@@ -1,0 +1,36 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.empty-state {
+  @include flex-column;
+  @include flex-center;
+  padding: $space-12 $space-6;
+  text-align: center;
+
+  .empty-state-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 64px;
+    margin-bottom: $space-4;
+    color: $text-disabled;
+  }
+
+  .empty-state-title {
+    @include text-lg;
+    margin: 0 0 $space-2 0;
+    color: $text-primary;
+    font-weight: $font-semibold;
+  }
+
+  .empty-state-description {
+    @include text-sm;
+    margin: 0 0 $space-6 0;
+    color: $text-secondary;
+    max-width: 400px;
+    line-height: $leading-relaxed;
+  }
+
+  .empty-state-action {
+    margin-top: $space-4;
+  }
+}

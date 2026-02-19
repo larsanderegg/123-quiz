@@ -1,0 +1,47 @@
+<mat-toolbar color="primary" class="app-toolbar" *ngIf="!isPlayerActive">
+  <div class="toolbar-content">
+    <a routerLink="/" class="app-title">
+      <mat-icon class="title-icon" aria-hidden="false" aria-label="Quiz icon">quiz</mat-icon>
+      <span>{{ title }}</span>
+    </a>
+
+    <div class="nav-links">
+      <button mat-button routerLink="quiz/start" routerLinkActive="active-nav-link">Play Quiz</button>
+      <button mat-button
+              *ngIf="authService.isAdmin$ | async"
+              routerLink="manage/questions"
+              routerLinkActive="active-nav-link"
+              [routerLinkActiveOptions]="{exact: true}">
+        Questions
+      </button>
+      <button mat-button
+              *ngIf="authService.isAdmin$ | async"
+              routerLink="manage/rounds"
+              routerLinkActive="active-nav-link">
+        Rounds
+      </button>
+    </div>
+
+    <div class="user-profile" *ngIf="authService.user$ | async as user">
+      <span class="user-name">{{ user.displayName }}</span>
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+        <img [src]="user.photoURL" [alt]="user.displayName" class="avatar">
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item disabled>
+          <mat-icon>email</mat-icon>
+          <span>{{ user.email }}</span>
+        </button>
+        <button mat-menu-item (click)="authService.signOut()">
+          <mat-icon>logout</mat-icon>
+          <span>Sign Out</span>
+        </button>
+      </mat-menu>
+    </div>
+
+  </div>
+</mat-toolbar>
+
+<main [class.fullscreen-player]="isPlayerActive">
+  <router-outlet></router-outlet>
+</main>

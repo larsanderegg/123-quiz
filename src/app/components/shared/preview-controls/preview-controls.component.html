@@ -1,0 +1,37 @@
+<div class="preview-controls-container">
+  <div class="step-info">
+    <span class="step-indicator">Step {{ currentStep + 1 }} of {{ totalSteps }}</span>
+    <span class="step-label">{{ stepLabel }}</span>
+  </div>
+
+  <div class="control-buttons">
+    <button
+      mat-icon-button
+      (click)="previousStep()"
+      [disabled]="!canGoPrevious"
+      matTooltip="Previous step"
+      aria-label="Previous step">
+      <mat-icon>navigate_before</mat-icon>
+    </button>
+
+    <div class="step-dots">
+      <button
+        *ngFor="let step of [0,1,2,3,4,5,6,7]"
+        class="step-dot"
+        [class.active]="step === currentStep"
+        (click)="goToStep(step)"
+        [matTooltip]="stepLabels[step]"
+        [attr.aria-label]="'Go to step ' + (step + 1)">
+      </button>
+    </div>
+
+    <button
+      mat-icon-button
+      (click)="nextStep()"
+      [disabled]="!canGoNext"
+      matTooltip="Next step"
+      aria-label="Next step">
+      <mat-icon>navigate_next</mat-icon>
+    </button>
+  </div>
+</div>

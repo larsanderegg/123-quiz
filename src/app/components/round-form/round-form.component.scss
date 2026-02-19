@@ -1,0 +1,348 @@
+@use '@angular/material' as mat;
+@import '../../../styles/variables';
+@import '../../../styles/mixins';
+
+// =============================================================================
+// Layout
+// =============================================================================
+
+.form-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: $space-6;
+}
+
+// =============================================================================
+// Card Header
+// =============================================================================
+
+mat-card-header {
+  position: relative;
+}
+
+.form-loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+// =============================================================================
+// Expansion Panels
+// =============================================================================
+
+mat-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.section-panel {
+  @include card;
+  box-shadow: $shadow-sm !important;
+
+  &.mat-expanded {
+    box-shadow: $shadow-md !important;
+  }
+
+  &.optional-panel {
+    .mat-expansion-panel-header {
+      background: $surface-variant;
+    }
+  }
+
+  .mat-expansion-panel-header {
+    padding: $space-4 $space-6 !important;
+    transition: all $transition-base;
+
+    &:hover:not(.mat-expanded) {
+      background: $surface-hover !important;
+    }
+
+    .mat-panel-title {
+      @include flex-start;
+      gap: $space-3;
+      font-size: $text-lg;
+      font-weight: $font-semibold;
+      color: $text-primary;
+
+      .panel-icon {
+        color: $primary;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .optional-badge {
+        margin-left: $space-2;
+        padding: $space-1 $space-2;
+        background: $surface-variant;
+        color: $text-secondary;
+        font-size: $text-xs;
+        font-weight: $font-medium;
+        border-radius: $radius;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .mat-panel-description {
+      font-size: $text-sm;
+      color: $text-secondary;
+    }
+  }
+
+  .mat-expansion-panel-body {
+    padding: 0 !important;
+  }
+}
+
+// =============================================================================
+// Section Content
+// =============================================================================
+
+.section-content {
+  padding: $space-6;
+  background: $surface;
+
+  .subsection-title {
+    @include flex-start;
+    gap: $space-2;
+    margin: $space-6 0 $space-4 0;
+    font-size: $text-base;
+    font-weight: $font-semibold;
+    color: $text-primary;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: $primary;
+    }
+  }
+}
+
+// =============================================================================
+// Form Fields
+// =============================================================================
+
+.full-width {
+  width: 100%;
+}
+
+.order-field {
+  max-width: 200px;
+}
+
+mat-form-field {
+  margin-bottom: $space-4;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// =============================================================================
+// File Upload Section
+// =============================================================================
+
+.file-upload-section {
+  margin-bottom: $space-6;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .file-upload-controls {
+    @include flex-start;
+    gap: $space-3;
+    margin-bottom: $space-4;
+  }
+
+  .file-preview {
+    margin-top: $space-4;
+    padding: $space-4;
+    background: $surface-variant;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+
+    .preview-info {
+      @include flex-start;
+      gap: $space-3;
+      margin-bottom: $space-3;
+
+      .preview-icon {
+        color: $primary;
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+      }
+
+      .preview-details {
+        flex: 1;
+        min-width: 0;
+
+        .preview-text {
+          display: block;
+          font-size: $text-sm;
+          font-weight: $font-medium;
+          color: $text-primary;
+          @include truncate;
+          margin-bottom: $space-1;
+        }
+
+        .preview-metadata {
+          @include flex-start;
+          gap: $space-3;
+          flex-wrap: wrap;
+
+          .file-size,
+          .file-metadata {
+            font-size: $text-xs;
+            color: $text-secondary;
+          }
+        }
+      }
+    }
+
+    .audio-player {
+      width: 100%;
+      margin-top: $space-3;
+    }
+
+    .image-preview {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border-radius: $radius;
+      display: block;
+      margin-top: $space-3;
+    }
+
+    .upload-progress {
+      margin-top: $space-3;
+
+      .progress-text {
+        display: block;
+        margin-top: $space-2;
+        font-size: $text-xs;
+        color: $text-secondary;
+        text-align: center;
+      }
+    }
+  }
+
+  .file-hint {
+    @include flex-start;
+    gap: $space-2;
+    margin: $space-3 0 0 0;
+    font-size: $text-xs;
+    color: $text-secondary;
+    line-height: $leading-relaxed;
+
+    .hint-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+  }
+}
+
+// =============================================================================
+// Theme Editor
+// =============================================================================
+
+.theme-content {
+  .theme-subsection {
+    margin-bottom: $space-6;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: $space-4;
+  }
+
+  .color-picker-field {
+    input[type="color"] {
+      height: 48px;
+      cursor: pointer;
+    }
+  }
+
+  .slider-container {
+    grid-column: 1 / -1;
+    padding: $space-4 0;
+
+    .slider-label {
+      display: block;
+      margin-bottom: $space-3;
+      font-size: $text-sm;
+      font-weight: $font-medium;
+      color: $text-primary;
+    }
+
+    .slider-hint {
+      display: block;
+      margin-top: $space-2;
+      font-size: $text-xs;
+      color: $text-secondary;
+    }
+
+    mat-slider {
+      width: 100%;
+    }
+  }
+
+  .theme-actions {
+    margin-top: $space-6;
+    padding-top: $space-6;
+    border-top: 1px solid $border;
+    @include flex-start;
+  }
+}
+
+// =============================================================================
+// Actions
+// =============================================================================
+
+.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  background: $surface;
+  border-top: 1px solid $border;
+  padding: $space-4 $space-6 !important;
+  box-shadow: 0 -2px 8px $shadow-sm;
+  z-index: $z-index-sticky;
+  @include flex-end;
+  gap: $space-3;
+}
+
+// =============================================================================
+// Responsive
+// =============================================================================
+
+@media (max-width: $breakpoint-md) {
+  .form-container {
+    padding: $space-4;
+  }
+
+  .theme-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-content {
+    padding: $space-4;
+  }
+}

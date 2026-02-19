@@ -1,0 +1,248 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function userExists() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return userExists() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidTimestamp(timestamp) {
+      return timestamp is timestamp &&
+             timestamp <= request.time + duration.value(5, 'm');
+    }
+
+    function isCurrentTimestamp(timestamp) {
+      return timestamp is timestamp &&
+             timestamp >= request.time - duration.value(1, 'h') &&
+             timestamp <= request.time + duration.value(5, 'm');
+    }
+
+    function isValidString(value, minLength, maxLength) {
+      return value is string &&
+             value.size() >= minLength &&
+             value.size() <= maxLength;
+    }
+
+    function isValidOptionalString(value, maxLength) {
+      return !('value' in request.resource.data) ||
+             value == null ||
+             (value is string && value.size() <= maxLength);
+    }
+
+    function isValidStorageUrl(url) {
+      return url is string &&
+             url.matches('https://firebasestorage.googleapis.com/.*') &&
+             url.size() <= 2048;
+    }
+
+    function isValidOptionalStorageUrl(url) {
+      return url == null || isValidStorageUrl(url);
+    }
+
+    function fieldUnchanged(field) {
+      return !(field in request.resource.data) ||
+             request.resource.data[field] == resource.data[field];
+    }
+
+    function fieldsUnchanged(fields) {
+      return fields.hasAll([]) ||
+             request.resource.data.diff(resource.data).affectedKeys().hasAll(fields) == false;
+    }
+
+    // ============================================================
+    // USERS COLLECTION
+    // ============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAdmin() && validateUserCreate();
+      allow update: if isAdmin() && validateUserUpdate();
+      allow delete: if isAdmin();
+
+      function validateUserCreate() {
+        let data = request.resource.data;
+        return (
+          data.keys().hasAll(['uid', 'email', 'displayName', 'isAdmin', 'createdAt']) &&
+          data.uid is string && data.uid == userId &&
+          isValidString(data.email, 3, 320) && data.email.matches('.*@.*\\..*') &&
+          isValidString(data.displayName, 1, 100) &&
+          data.isAdmin is bool &&
+          isValidTimestamp(data.createdAt) &&
+          isValidOptionalString(data.photoURL, 2048) &&
+          data.keys().hasOnly(['uid', 'email', 'displayName', 'photoURL', 'isAdmin', 'createdAt'])
+        );
+      }
+
+      function validateUserUpdate() {
+        let data = request.resource.data;
+        return (
+          fieldsUnchanged(['uid', 'email', 'createdAt']) &&
+          (!('displayName' in data) || isValidString(data.displayName, 1, 100)) &&
+          (!('photoURL' in data) || isValidOptionalString(data.photoURL, 2048)) &&
+          (!('isAdmin' in data) || data.isAdmin is bool) &&
+          data.keys().hasOnly(['uid', 'email', 'displayName', 'photoURL', 'isAdmin', 'createdAt'])
+        );
+      }
+    }
+
+    // ============================================================
+    // ROUNDS COLLECTION
+    // ============================================================
+
+    match /rounds/{roundId} {
+      allow read: if userExists();
+      allow create: if isAdmin() && validateRoundCreate();
+      allow update: if isAdmin() && validateRoundUpdate();
+      allow delete: if isAdmin();
+
+      function validateRoundCreate() {
+        let data = request.resource.data;
+        return (
+          data.keys().hasAll(['name', 'order', 'createdAt', 'updatedAt']) &&
+          isValidString(data.name, 1, 200) &&
+          data.order is int && data.order >= 0 && data.order <= 1000 &&
+          isCurrentTimestamp(data.createdAt) &&
+          isCurrentTimestamp(data.updatedAt) &&
+          isValidOptionalStorageUrl(data.audioUrl) &&
+          isValidOptionalStorageUrl(data.backgroundImageUrl) &&
+          isValidOptionalString(data.audioPath, 500) &&
+          isValidOptionalString(data.backgroundImagePath, 500) &&
+          data.keys().hasOnly(['name', 'order', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'createdAt', 'updatedAt'])
+        );
+      }
+
+      function validateRoundUpdate() {
+        let data = request.resource.data;
+        return (
+          fieldUnchanged('createdAt') &&
+          data.keys().hasAll(['updatedAt']) &&
+          isCurrentTimestamp(data.updatedAt) &&
+          (!('name' in data) || isValidString(data.name, 1, 200)) &&
+          (!('order' in data) || (data.order is int && data.order >= 0 && data.order <= 1000)) &&
+          (!('audioUrl' in data) || isValidOptionalStorageUrl(data.audioUrl)) &&
+          (!('backgroundImageUrl' in data) || isValidOptionalStorageUrl(data.backgroundImageUrl)) &&
+          (!('audioPath' in data) || isValidOptionalString(data.audioPath, 500)) &&
+          (!('backgroundImagePath' in data) || isValidOptionalString(data.backgroundImagePath, 500)) &&
+          data.keys().hasOnly(['name', 'order', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'createdAt', 'updatedAt'])
+        );
+      }
+    }
+
+    // ============================================================
+    // QUESTIONS COLLECTION
+    // ============================================================
+
+    match /questions/{questionId} {
+      allow read: if userExists();
+      allow create: if isAdmin() && validateQuestionCreate();
+      allow update: if isAdmin() && validateQuestionUpdate();
+      allow delete: if isAdmin();
+
+      function validateQuestionCreate() {
+        let data = request.resource.data;
+        return (
+          data.keys().hasAll(['text', 'category', 'introduction', 'order', 'createdAt', 'updatedAt']) &&
+          isValidString(data.text, 1, 1000) &&
+          isValidString(data.category, 1, 100) &&
+          isValidString(data.introduction, 0, 500) &&
+          data.order is int && data.order >= 0 && data.order <= 1000 &&
+          isCurrentTimestamp(data.createdAt) &&
+          isCurrentTimestamp(data.updatedAt) &&
+          isValidOptionalString(data.explanation, 2000) &&
+          isValidOptionalStorageUrl(data.imageUrl) &&
+          isValidOptionalString(data.roundId, 100) &&
+          (!('image' in data) || data.image == null) &&
+          (!('imageMimeType' in data) || data.imageMimeType == null) &&
+          (!('round' in data) || data.round == null) &&
+          (!('answers' in data) || data.answers == null || (data.answers is list && data.answers.size() == 0)) &&
+          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'image', 'imageMimeType', 'roundId', 'round', 'answers', 'createdAt', 'updatedAt'])
+        );
+      }
+
+      function validateQuestionUpdate() {
+        let data = request.resource.data;
+        return (
+          fieldUnchanged('createdAt') &&
+          data.keys().hasAll(['updatedAt']) &&
+          isCurrentTimestamp(data.updatedAt) &&
+          (!('text' in data) || isValidString(data.text, 1, 1000)) &&
+          (!('explanation' in data) || isValidOptionalString(data.explanation, 2000)) &&
+          (!('category' in data) || isValidString(data.category, 1, 100)) &&
+          (!('introduction' in data) || isValidString(data.introduction, 0, 500)) &&
+          (!('order' in data) || (data.order is int && data.order >= 0 && data.order <= 1000)) &&
+          (!('imageUrl' in data) || isValidOptionalStorageUrl(data.imageUrl)) &&
+          (!('roundId' in data) || isValidOptionalString(data.roundId, 100)) &&
+          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'image', 'imageMimeType', 'roundId', 'round', 'answers', 'createdAt', 'updatedAt'])
+        );
+      }
+    }
+
+    // ============================================================
+    // ANSWERS COLLECTION
+    // ============================================================
+
+    match /answers/{answerId} {
+      allow read: if userExists();
+      allow create: if isAdmin() && validateAnswerCreate();
+      allow update: if isAdmin() && validateAnswerUpdate();
+      allow delete: if isAdmin();
+
+      function validateAnswerCreate() {
+        let data = request.resource.data;
+        return (
+          data.keys().hasAll(['text', 'isCorrect', 'questionId', 'createdAt', 'updatedAt']) &&
+          isValidString(data.text, 1, 500) &&
+          data.isCorrect is bool &&
+          isValidString(data.questionId, 1, 100) &&
+          isCurrentTimestamp(data.createdAt) &&
+          isCurrentTimestamp(data.updatedAt) &&
+          (!('order' in data) || (data.order is int && data.order >= 0 && data.order <= 100)) &&
+          isValidOptionalStorageUrl(data.imageUrl) &&
+          (!('image' in data) || data.image == null) &&
+          (!('imageMimeType' in data) || data.imageMimeType == null) &&
+          data.keys().hasOnly(['text', 'isCorrect', 'order', 'imageUrl', 'image', 'imageMimeType', 'questionId', 'createdAt', 'updatedAt'])
+        );
+      }
+
+      function validateAnswerUpdate() {
+        let data = request.resource.data;
+        return (
+          fieldsUnchanged(['createdAt', 'questionId']) &&
+          data.keys().hasAll(['updatedAt']) &&
+          isCurrentTimestamp(data.updatedAt) &&
+          (!('text' in data) || isValidString(data.text, 1, 500)) &&
+          (!('isCorrect' in data) || data.isCorrect is bool) &&
+          (!('order' in data) || (data.order is int && data.order >= 0 && data.order <= 100)) &&
+          (!('imageUrl' in data) || isValidOptionalStorageUrl(data.imageUrl)) &&
+          data.keys().hasOnly(['text', 'isCorrect', 'order', 'imageUrl', 'image', 'imageMimeType', 'questionId', 'createdAt', 'updatedAt'])
+        );
+      }
+    }
+
+    // ============================================================
+    // DENY ALL OTHER PATHS
+    // ============================================================
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

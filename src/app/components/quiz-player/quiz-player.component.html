@@ -1,0 +1,64 @@
+<div class="quiz-player-fullscreen"
+     [ngStyle]="{'background-image': activeRoundBackgroundImage ? 'url(' + activeRoundBackgroundImage + ')' : 'none'}">
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate" color="primary"></mat-progress-bar>
+
+  <div *ngIf="quizFinished && !isLoading" class="quiz-finished-message">
+    <h1>Das isch's gsi mit dere Rundi!</h1>
+    <button mat-raised-button
+            color="primary"
+            id="choose-round-button"
+            (click)="navigateToStart()">
+      Choose Another Round
+    </button>
+  </div>
+
+  <div *ngIf="currentQuestion && !isLoading && !quizFinished"
+       class="quiz-content"
+       (click)="advanceQuizStep()">
+
+    <div *ngIf="currentRevealStep === 0" class="category-header-container"> <h1 class="category-header-text">{{ currentQuestion.category }}</h1> </div>
+    <div *ngIf="currentRevealStep === 0 && currentQuestion.introduction"
+         class="introduction-body-container" > <p class="introduction-body-text"> {{ currentQuestion.introduction }}
+    </p>
+    </div>
+    <div *ngIf="currentRevealStep >= 1" class="question-container">
+      <h1 class="question-text">{{ currentQuestion.text }}</h1>
+    </div>
+
+    <div *ngIf="currentRevealStep >= 1 && !showExplanation" class="answers-container-horizontal">
+      <ng-container *ngFor="let answer of currentQuestion.answers; let i = index">
+        <div *ngIf="currentRevealStep > (i + 1); else placeholderSlot"
+             class="answer-slot revealed"
+             [ngClass]="{
+                           'correct-answer-highlight': showCorrectHighlight && answer.isCorrect,
+                           'incorrect-answer-dim': showCorrectHighlight && !answer.isCorrect,
+                           'blinking': isBlinkingStepActive && isAnswerBlinking(i)
+                         }">
+          <img *ngIf="answer.image" [src]="'data:' + answer.imageMimeType + ';base64,' + answer.image"
+               alt="Answer Image" class="answer-image">
+          <span class="answer-text">{{ answer.text }}</span>
+        </div>
+        <ng-template #placeholderSlot>
+          <div class="answer-slot placeholder"><span class="placeholder-text">{{ i + 1 }}</span></div>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="currentQuestion.answers.length < 3">
+        <div *ngFor="let _ of [].constructor(3 - currentQuestion.answers.length)" class="answer-slot empty"></div>
+      </ng-container>
+    </div>
+
+    <div *ngIf="showExplanation && (currentQuestion.explanation || (currentQuestion.image && currentQuestion.imageMimeType))"
+         class="explanation-container expanded visible">
+
+      <img *ngIf="currentQuestion.image && currentQuestion.imageMimeType"
+           class="explanation-image"
+           [src]="'data:' + currentQuestion.imageMimeType + ';base64,' + currentQuestion.image"
+           alt="Explanation image for question {{ currentQuestionIndex + 1 }}">
+      <p *ngIf="currentQuestion.explanation" class="explanation-text">
+        {{ currentQuestion.explanation }}
+      </p>
+    </div>
+  </div>
+
+</div>
