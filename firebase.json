@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "dist/quiz-frontend/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
