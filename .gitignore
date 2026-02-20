@@ -59,5 +59,3 @@ backend/dist/
 # Shared
 shared/dist/
 /.angular/
-/src/environments/environment.development.ts
-/src/environments/environment.ts
