@@ -1,8 +1,9 @@
 export const environment = {
     production: true,
+    useEmulators: false,
     firebase: {
         apiKey: "AIzaSyCG5bDCxwiyOG6U77hn8JMD7Le8oO37R34",
-        authDomain: "quiz-d36a3.firebaseapp.com",
+        authDomain: "123-quiz.attika-wg.ch",
         projectId: "quiz-d36a3",
         storageBucket: "quiz-d36a3.firebasestorage.app",
         messagingSenderId: "225183609367",
