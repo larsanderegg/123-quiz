@@ -56,6 +56,11 @@ export class AuthService {
     map(profile => profile?.isAdmin ?? false)
   );
 
+  // Observable boolean indicating if user is viewer (or admin, who is implicitly a viewer)
+  isViewer$: Observable<boolean> = this.userProfile$.pipe(
+    map(profile => profile?.isViewer === true || profile?.isAdmin === true)
+  );
+
   /**
    * Sign in with Google using redirect (avoids COOP issues)
    */

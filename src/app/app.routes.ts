@@ -4,7 +4,7 @@ import {QuizStartComponent} from './components/quiz-start/quiz-start.component';
 import {RoundStartComponent} from './components/round-start/round-start.component';
 import {LoginComponent} from './components/login/login.component';
 import {UnauthorizedComponent} from './components/unauthorized/unauthorized.component';
-import { authGuard } from './guards/auth.guard';
+import { viewerGuard } from './guards/viewer.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -13,11 +13,11 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'unauthorized', component: UnauthorizedComponent },
 
-  // Quiz Routes (authenticated users only)
-  { path: 'quiz/start', component: QuizStartComponent, canActivate: [authGuard] },
-  { path: 'quiz/:roundId/start', component: RoundStartComponent, canActivate: [authGuard] },
-  { path: 'quiz/:roundId/finished', component: QuizPlayerComponent, canActivate: [authGuard] },
-  { path: 'quiz/:roundId/play/question/:questionIndex/step/:stepIndex', component: QuizPlayerComponent, canActivate: [authGuard] },
+  // Quiz Routes (viewer or admin users only)
+  { path: 'quiz/start', component: QuizStartComponent, canActivate: [viewerGuard] },
+  { path: 'quiz/:roundId/start', component: RoundStartComponent, canActivate: [viewerGuard] },
+  { path: 'quiz/:roundId/finished', component: QuizPlayerComponent, canActivate: [viewerGuard] },
+  { path: 'quiz/:roundId/play/question/:questionIndex/step/:stepIndex', component: QuizPlayerComponent, canActivate: [viewerGuard] },
   { path: 'quiz/:roundId/play', redirectTo: 'quiz/:roundId/play/question/0/step/0', pathMatch: 'full' },
 
   // Management Routes (admin users only - lazy loaded)

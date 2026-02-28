@@ -7,6 +7,7 @@ export interface User {
 
 export interface UserProfile extends User {
   isAdmin: boolean;
+  isViewer: boolean;
   createdAt: Date;
   lastLogin: Date;
 }
