@@ -29,15 +29,15 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function isValidTimestamp(timestamp) {
-      return timestamp is timestamp &&
-             timestamp <= request.time + duration.value(5, 'm');
+    function isValidTimestamp(ts) {
+      return ts is timestamp &&
+             ts <= request.time + duration.value(5, 'm');
     }
 
-    function isCurrentTimestamp(timestamp) {
-      return timestamp is timestamp &&
-             timestamp >= request.time - duration.value(1, 'h') &&
-             timestamp <= request.time + duration.value(5, 'm');
+    function isCurrentTimestamp(ts) {
+      return ts is timestamp &&
+             ts >= request.time - duration.value(1, 'h') &&
+             ts <= request.time + duration.value(5, 'm');
     }
 
     function isValidString(value, minLength, maxLength) {
@@ -54,7 +54,8 @@ service cloud.firestore {
 
     function isValidStorageUrl(url) {
       return url is string &&
-             url.matches('https://firebasestorage.googleapis.com/.*') &&
+             (url.matches('https://firebasestorage.googleapis.com/.*') ||
+              url.matches('https://storage.googleapis.com/.*')) &&
              url.size() <= 2048;
     }
 
@@ -115,7 +116,7 @@ service cloud.firestore {
     // ============================================================
 
     match /rounds/{roundId} {
-      allow read: if isViewer() || isAdmin();
+      allow read: if userExists();
       allow create: if isAdmin() && validateRoundCreate();
       allow update: if isAdmin() && validateRoundUpdate();
       allow delete: if isAdmin();
@@ -132,7 +133,8 @@ service cloud.firestore {
           isValidOptionalStorageUrl(data.backgroundImageUrl) &&
           isValidOptionalString(data.audioPath, 500) &&
           isValidOptionalString(data.backgroundImagePath, 500) &&
-          data.keys().hasOnly(['name', 'order', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'createdAt', 'updatedAt'])
+          (!('theme' in data) || data.theme == null || data.theme is map) &&
+          data.keys().hasOnly(['name', 'order', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'theme', 'createdAt', 'updatedAt'])
         );
       }
 
@@ -148,7 +150,8 @@ service cloud.firestore {
           (!('backgroundImageUrl' in data) || isValidOptionalStorageUrl(data.backgroundImageUrl)) &&
           (!('audioPath' in data) || isValidOptionalString(data.audioPath, 500)) &&
           (!('backgroundImagePath' in data) || isValidOptionalString(data.backgroundImagePath, 500)) &&
-          data.keys().hasOnly(['name', 'order', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'createdAt', 'updatedAt'])
+          (!('theme' in data) || data.theme == null || data.theme is map) &&
+          data.keys().hasOnly(['name', 'order', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'theme', 'createdAt', 'updatedAt'])
         );
       }
     }
@@ -158,7 +161,7 @@ service cloud.firestore {
     // ============================================================
 
     match /questions/{questionId} {
-      allow read: if isViewer() || isAdmin();
+      allow read: if userExists();
       allow create: if isAdmin() && validateQuestionCreate();
       allow update: if isAdmin() && validateQuestionUpdate();
       allow delete: if isAdmin();
@@ -207,7 +210,7 @@ service cloud.firestore {
     // ============================================================
 
     match /answers/{answerId} {
-      allow read: if isViewer() || isAdmin();
+      allow read: if userExists();
       allow create: if isAdmin() && validateAnswerCreate();
       allow update: if isAdmin() && validateAnswerUpdate();
       allow delete: if isAdmin();
