@@ -32,6 +32,7 @@ export class QuizStartComponent implements OnInit {
   rounds: Round[] = [];
   groupedRounds: { finale: Round[], halfFinale: Round[], group: Round[] } = { finale: [], halfFinale: [], group: [] };
   isLoading = true;
+  showRounds = false;
 
   private introSound: HTMLAudioElement;
 
@@ -40,7 +41,7 @@ export class QuizStartComponent implements OnInit {
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {
-    this.introSound = new Audio('assets/sounds/intro-sound.mp3');
+    this.introSound = new Audio('assets/sounds/intro.mp3');
   }
 
   ngOnInit(): void {
@@ -77,9 +78,12 @@ export class QuizStartComponent implements OnInit {
 
   startRound(roundId: string): void {
     console.log(`Starting quiz for round ID: ${roundId}`);
-    // Navigate to the player, passing the roundId as a query parameter
-    // The QuizPlayerComponent will need to be updated later to filter questions based on this ID.
     this.introSound.pause()
     this.router.navigate(['/quiz', roundId, 'start']);
+  }
+
+  onStart(): void {
+    this.introSound.play();
+    this.showRounds = true;
   }
 }

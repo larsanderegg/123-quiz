@@ -1,4 +1,8 @@
-<div class="start-page-container">
+<div *ngIf="!showRounds" class="splash-container">
+  <button mat-flat-button (click)="onStart()">Start</button>
+</div>
+
+<div *ngIf="showRounds" class="start-page-container">
   <div *ngIf="isLoading" class="loading-indicator">
     <mat-spinner diameter="50"></mat-spinner>
     <p>Loading available rounds...</p>

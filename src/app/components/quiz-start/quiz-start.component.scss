@@ -1,5 +1,14 @@
 @use '@angular/material' as mat;
 
+.splash-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #000;
+}
+
 .start-page-container {
   display: flex;
   flex-direction: column;
