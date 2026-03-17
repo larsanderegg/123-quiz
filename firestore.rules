@@ -134,7 +134,8 @@ service cloud.firestore {
           isValidOptionalString(data.audioPath, 500) &&
           isValidOptionalString(data.backgroundImagePath, 500) &&
           (!('theme' in data) || data.theme == null || data.theme is map) &&
-          data.keys().hasOnly(['name', 'order', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'theme', 'createdAt', 'updatedAt'])
+          (!('type' in data) || data.type in ['group', 'half-finale', 'finale']) &&
+          data.keys().hasOnly(['name', 'order', 'type', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'theme', 'createdAt', 'updatedAt'])
         );
       }
 
@@ -151,7 +152,8 @@ service cloud.firestore {
           (!('audioPath' in data) || isValidOptionalString(data.audioPath, 500)) &&
           (!('backgroundImagePath' in data) || isValidOptionalString(data.backgroundImagePath, 500)) &&
           (!('theme' in data) || data.theme == null || data.theme is map) &&
-          data.keys().hasOnly(['name', 'order', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'theme', 'createdAt', 'updatedAt'])
+          (!('type' in data) || data.type in ['group', 'half-finale', 'finale']) &&
+          data.keys().hasOnly(['name', 'order', 'type', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'theme', 'createdAt', 'updatedAt'])
         );
       }
     }

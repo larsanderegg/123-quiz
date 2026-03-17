@@ -30,6 +30,7 @@ import { MatDividerModule } from '@angular/material/divider'; // Optional divide
 })
 export class QuizStartComponent implements OnInit {
   rounds: Round[] = [];
+  groupedRounds: { finale: Round[], halfFinale: Round[], group: Round[] } = { finale: [], halfFinale: [], group: [] };
   isLoading = true;
 
   private introSound: HTMLAudioElement;
@@ -51,14 +52,18 @@ export class QuizStartComponent implements OnInit {
     this.isLoading = true;
     this.roundService.getAllRounds().pipe(take(1)).subscribe({
       next: (rounds) => {
-        this.rounds = rounds.sort((a, b) => {
-          const orderA = a.order ?? Infinity; // Treat null/undefined order as last
+        const sorted = rounds.sort((a, b) => {
+          const orderA = a.order ?? Infinity;
           const orderB = b.order ?? Infinity;
-          if (orderA !== orderB) {
-            return orderA - orderB; // Sort by order first
-          }
-          return a.name.localeCompare(b.name); // If orders are same, sort by name
+          if (orderA !== orderB) return orderA - orderB;
+          return a.name.localeCompare(b.name);
         });
+        this.rounds = sorted;
+        this.groupedRounds = {
+          finale: sorted.filter(r => r.type === 'finale'),
+          halfFinale: sorted.filter(r => r.type === 'half-finale'),
+          group: sorted.filter(r => r.type === 'group' || !r.type),
+        };
         this.isLoading = false;
         this.cdr.detectChanges();
       },

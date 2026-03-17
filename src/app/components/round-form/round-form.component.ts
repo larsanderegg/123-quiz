@@ -5,7 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { RoundService } from '../../services/round.service';
 import { StorageService } from '../../services/storage.service';
 import { ThemeService } from '../../services/theme.service';
-import { Round, RoundInput, QuizTheme, DEFAULT_THEME } from '../../models';
+import { Round, RoundInput, RoundType, QuizTheme, DEFAULT_THEME } from '../../models';
 import { finalize, take, switchMap, of, forkJoin } from 'rxjs';
 
 // Import Angular Material Modules
@@ -97,6 +97,7 @@ export class RoundFormComponent implements OnInit, OnDestroy {
     this.roundForm = this.fb.group({
       name: ['', Validators.required],
       order: [0, [Validators.required, Validators.min(0)]],
+      type: ['group' as RoundType, Validators.required],
       theme: this.fb.group({
         primaryColor: [''],
         secondaryColor: [''],
@@ -146,6 +147,7 @@ export class RoundFormComponent implements OnInit, OnDestroy {
           this.roundForm.patchValue({
             name: round.name,
             order: round.order ?? 0,
+            type: round.type ?? 'group',
           });
 
           // Load existing URLs for preview

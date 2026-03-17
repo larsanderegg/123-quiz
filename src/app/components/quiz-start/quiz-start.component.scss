@@ -45,7 +45,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 }
+
+.pyramid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.tier {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.tier-finale { max-width: 320px; }
+.tier-half-finale { max-width: 672px; }
+.tier-group { max-width: 100%; }
 
 .selection-title {
   font-size: 1.5rem;
@@ -53,15 +73,6 @@
   color: rgba(0, 0, 0, 0.7);
   text-align: center;
   margin-bottom: 25px;
-}
-
-// Styles for the vertical grid layout
-.rounds-grid {
-  display: grid;
-  gap: 20px; // Space between cards
-  width: 100%; // Grid takes full width of its container
-  // Responsive columns - crucial for vertical layout that wraps
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); // Creates columns that wrap
 }
 
 // Styles for the vertical card

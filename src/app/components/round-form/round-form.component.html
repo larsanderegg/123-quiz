@@ -36,6 +36,16 @@
                 <mat-error *ngIf="roundForm.controls['order']?.hasError('min')">Order must be 0 or greater</mat-error>
                 <mat-hint>Determines the display order on the start page (lower numbers first)</mat-hint>
               </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Round Type</mat-label>
+                <mat-select formControlName="type">
+                  <mat-option value="group">Group</mat-option>
+                  <mat-option value="half-finale">Half-Finale</mat-option>
+                  <mat-option value="finale">Finale</mat-option>
+                </mat-select>
+                <mat-hint>Determines the pyramid tier on the quiz start page</mat-hint>
+              </mat-form-field>
             </div>
           </mat-expansion-panel>
 

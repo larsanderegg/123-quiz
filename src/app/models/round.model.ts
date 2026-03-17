@@ -1,9 +1,12 @@
 import { QuizTheme } from './theme.model';
 
+export type RoundType = 'group' | 'half-finale' | 'finale';
+
 export interface Round {
   id: string;
   name: string;
   order: number;
+  type?: RoundType;
   audioUrl?: string;
   /**
    * @deprecated Use audioUrl instead. This field is kept for backward compatibility only.
