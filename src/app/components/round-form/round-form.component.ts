@@ -149,8 +149,8 @@ export class RoundFormComponent implements OnInit, OnDestroy {
           });
 
           // Load existing URLs for preview
-          this.existingAudioUrl = round.audioUrl || round.audioPath || null;
-          this.existingBackgroundUrl = round.backgroundImageUrl || round.backgroundImagePath || null;
+          this.existingAudioUrl = round.audioUrl || null;
+          this.existingBackgroundUrl = round.backgroundImageUrl || null;
 
           // Set previews
           this.audioPreview = this.existingAudioUrl;
@@ -382,10 +382,10 @@ export class RoundFormComponent implements OnInit, OnDestroy {
         }),
         switchMap((uploadResults) => {
           // Update round data with uploaded URLs
-          if (uploadResults.audioUrl) {
+          if (uploadTasks.audio && uploadResults.audioUrl) {
             roundData.audioUrl = uploadResults.audioUrl;
           }
-          if (uploadResults.backgroundImageUrl) {
+          if (uploadTasks.background && uploadResults.backgroundImageUrl) {
             roundData.backgroundImageUrl = uploadResults.backgroundImageUrl;
           }
 
