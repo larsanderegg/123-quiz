@@ -80,16 +80,11 @@ export class RoundStartComponent implements OnInit, OnDestroy {
         next: (round) => {
           console.log('✅ [RoundStart] Round data received:', round);
           this.roundData = round;
-          // Set background image path
-          if (round.backgroundImagePath) {
-            this.backgroundImage = round.backgroundImagePath;
-            console.log('Setting background image:', this.backgroundImage);
-          }
-          // Initialize audio object if path exists
-          if (round.audioPath) {
-            this.roundAudio = new Audio(round.audioPath);
-            this.roundAudio.load(); // Preload audio
-            console.log('Audio initialized:', round.audioPath);
+          this.backgroundImage = round.backgroundImageUrl || round.backgroundImagePath || null;
+          const audioSrc = round.audioUrl || round.audioPath || null;
+          if (audioSrc) {
+            this.roundAudio = new Audio(audioSrc);
+            this.roundAudio.load();
           }
         },
         error: (err) => {
@@ -124,6 +119,6 @@ export class RoundStartComponent implements OnInit, OnDestroy {
 
   // Helper function for ngStyle background URL formatting
   getBackgroundUrl(): string | null {
-    return this.backgroundImage ? `url('/assets/images/${this.backgroundImage}')` : null;
+    return this.backgroundImage ? `url(${this.backgroundImage})` : null;
   }
 }
