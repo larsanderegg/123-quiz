@@ -11,7 +11,7 @@ import {
   query,
   where,
   orderBy,
-  Timestamp
+  serverTimestamp
 } from '@angular/fire/firestore';
 import { Observable, from, switchMap, forkJoin, of, map, take } from 'rxjs';
 import { Question, QuestionInput, Answer, AnswerInput } from '../models';
@@ -73,8 +73,8 @@ export class QuestionService {
   createQuestion(questionData: QuestionInput): Observable<Question> {
     const data = {
       ...questionData,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now()
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     };
 
     return from(addDoc(this.questionsCollection, data)).pipe(
@@ -89,7 +89,7 @@ export class QuestionService {
     const questionDoc = doc(this.firestore, `questions/${id}`);
     const data = {
       ...questionData,
-      updatedAt: Timestamp.now()
+      updatedAt: serverTimestamp()
     };
 
     return from(updateDoc(questionDoc, data)).pipe(
@@ -198,8 +198,8 @@ export class QuestionService {
   createAnswer(answerData: AnswerInput): Observable<Answer> {
     const data = {
       ...answerData,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now()
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     };
 
     return from(addDoc(this.answersCollection, data)).pipe(
@@ -217,7 +217,7 @@ export class QuestionService {
     const answerDoc = doc(this.firestore, `answers/${id}`);
     const data = {
       ...answerData,
-      updatedAt: Timestamp.now()
+      updatedAt: serverTimestamp()
     };
 
     return from(updateDoc(answerDoc, data)).pipe(

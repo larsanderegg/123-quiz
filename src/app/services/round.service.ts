@@ -10,7 +10,7 @@ import {
   deleteDoc,
   query,
   orderBy,
-  Timestamp
+  serverTimestamp
 } from '@angular/fire/firestore';
 import { Observable, from, switchMap, of, map, take } from 'rxjs';
 import { Round, RoundInput } from '../models';
@@ -52,8 +52,8 @@ export class RoundService {
   createRound(roundData: RoundInput): Observable<Round> {
     const data = {
       ...roundData,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now()
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     };
 
     return from(addDoc(this.roundsCollection, data)).pipe(
@@ -68,7 +68,7 @@ export class RoundService {
     const roundDoc = doc(this.firestore, `rounds/${id}`);
     const data = {
       ...roundData,
-      updatedAt: Timestamp.now()
+      updatedAt: serverTimestamp()
     };
 
     return from(updateDoc(roundDoc, data)).pipe(
