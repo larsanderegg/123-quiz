@@ -131,25 +131,16 @@ export class QuestionFormComponent implements OnInit, OnDestroy {
             introduction: question.introduction ?? '', // Patch introduction
             order: question.order ?? 0, // Patch order, default to 0 if null/undefined
             explanation: question.explanation ?? '',
-            roundId: question.round?.id ?? null // Patch roundId, default to null
+            roundId: question.roundId ?? null // Patch roundId, default to null
           });
 
           // **** Load Existing Explanation Image ****
           this.explanationImageFile = null; // Reset file
           this.explanationImagePreview = null;
           this.existingExplanationImageUrl = null;
-          if (question.image && typeof question.image === 'object' && (question.image as any).type === 'Buffer' && Array.isArray((question.image as any).data) && question.imageMimeType) {
-            try {
-              const bytes: number[] = (question.image as any).data;
-              const binaryString = bytes.map(byte => String.fromCharCode(byte)).join('');
-              const base64String = btoa(binaryString);
-              const imageUrl = `data:${question.imageMimeType};base64,${base64String}`;
-              this.existingExplanationImageUrl = imageUrl;
-              this.explanationImagePreview = imageUrl; // Set preview
-              console.log('Loaded existing explanation image.');
-            } catch (e) {
-              console.error(`Error processing question image buffer:`, e);
-            }
+          if (question.imageUrl) {
+            this.existingExplanationImageUrl = question.imageUrl;
+            this.explanationImagePreview = question.imageUrl;
           }
           // **** END Load Image ****
 
@@ -170,20 +161,9 @@ export class QuestionFormComponent implements OnInit, OnDestroy {
               this.answers.push(this.createAnswer(answer.text, answer.isCorrect, i));
 
               // Handle image
-              let imageUrl: string | null = null;
-              if (answer.image && typeof answer.image === 'object' && (answer.image as any).type === 'Buffer' && Array.isArray((answer.image as any).data)) {
-                try {
-                  const bytes: number[] = (answer.image as any).data;
-                  const binaryString = bytes.map(byte => String.fromCharCode(byte)).join('');
-                  const base64String = btoa(binaryString);
-                  imageUrl = `data:${answer.imageMimeType};base64,${base64String}`;
-                } catch (e) {
-                  console.error(`Error processing image buffer for answer index ${i}:`, e);
-                }
-              }
-              if (imageUrl && answer.imageMimeType) {
-                this.existingAnswerImages.set(i, {url: imageUrl, mimeType: answer.imageMimeType});
-                this.answerImagePreviews.set(i, imageUrl);
+              if (answer.imageUrl) {
+                this.existingAnswerImages.set(i, { url: answer.imageUrl, mimeType: '' });
+                this.answerImagePreviews.set(i, answer.imageUrl);
               }
               if (answer.id) {
                 this.answerIds.set(i, answer.id);

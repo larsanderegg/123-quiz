@@ -217,7 +217,7 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
 
         // Store round background (use new URL field, fallback to legacy path)
         if (round) {
-          this.activeRoundBackgroundImage = round.backgroundImageUrl || round.backgroundImagePath || null;
+          this.activeRoundBackgroundImage = round.backgroundImageUrl || null;
 
           // Apply theme if round has one
           if (round.theme) {

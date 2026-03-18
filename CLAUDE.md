@@ -65,7 +65,7 @@ All data stored in Cloud Firestore collections:
 **Key Notes**:
 - All collections use auto-generated document IDs
 - Images and audio stored in Cloud Storage, referenced by URL in Firestore documents
-- Legacy properties (`image`, `imageMimeType`, `audioPath`, `backgroundImagePath`) exist for backward compatibility but should not be used in new code
+- All image and audio references use Cloud Storage URLs (`imageUrl`, `audioUrl`, `backgroundImageUrl`)
 - All documents include `createdAt` and `updatedAt` timestamp fields
 
 ### Cloud Storage Structure
@@ -185,7 +185,7 @@ Key setup steps:
 
 This project was migrated from a NestJS/PostgreSQL/TypeORM architecture to Firebase. See [MIGRATION.md](MIGRATION.md) for data migration scripts and process.
 
-**Legacy Properties**: Some models retain deprecated properties (e.g., `image`, `imageMimeType`, `audioPath`) for backward compatibility. New code should only use `imageUrl` and `audioUrl` properties with Cloud Storage URLs.
+**Completed Migration**: All deprecated legacy properties (`image`, `imageMimeType`, `round`) have been removed from models and templates. All image and audio references use Cloud Storage URLs (`imageUrl`, `audioUrl`, `backgroundImageUrl`).
 
 ## Important Development Notes
 

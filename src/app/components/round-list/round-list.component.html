@@ -24,8 +24,6 @@
     <mat-card *ngFor="let round of rounds" class="list-item-card">
       <mat-card-header>
         <mat-card-title>{{ round.name }}</mat-card-title>
-        <mat-card-subtitle>Audio Path: {{ round.audioPath || 'N/A' }}</mat-card-subtitle>
-        <mat-card-subtitle>Image Path: {{ round.backgroundImagePath || 'N/A' }}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content class="round-card-content">
         <p>

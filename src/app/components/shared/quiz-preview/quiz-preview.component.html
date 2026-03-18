@@ -36,10 +36,6 @@
                [src]="answer.imageUrl"
                alt="Answer Image"
                class="answer-image">
-          <img *ngIf="!answer.imageUrl && answer.image && answer.imageMimeType"
-               [src]="'data:' + answer.imageMimeType + ';base64,' + answer.image"
-               alt="Answer Image"
-               class="answer-image">
           <span class="answer-text">{{ answer.text }}</span>
         </div>
 
@@ -58,17 +54,13 @@
     </div>
 
     <!-- Step 7: Explanation -->
-    <div *ngIf="showExplanation && (question.explanation || question.imageUrl || (question.image && question.imageMimeType))"
+    <div *ngIf="showExplanation && (question.explanation || question.imageUrl)"
          class="explanation-container expanded visible">
 
-      <!-- Use imageUrl (new) or fall back to legacy image -->
+      <!-- Use imageUrl (new) -->
       <img *ngIf="question.imageUrl"
            class="explanation-image"
            [src]="question.imageUrl"
-           alt="Explanation image">
-      <img *ngIf="!question.imageUrl && question.image && question.imageMimeType"
-           class="explanation-image"
-           [src]="'data:' + question.imageMimeType + ';base64,' + question.image"
            alt="Explanation image">
 
       <p *ngIf="question.explanation" class="explanation-text">

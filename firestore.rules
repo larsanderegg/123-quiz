@@ -131,11 +131,9 @@ service cloud.firestore {
           isCurrentTimestamp(data.updatedAt) &&
           isValidOptionalStorageUrl(data.audioUrl) &&
           isValidOptionalStorageUrl(data.backgroundImageUrl) &&
-          isValidOptionalString(data.audioPath, 500) &&
-          isValidOptionalString(data.backgroundImagePath, 500) &&
           (!('theme' in data) || data.theme == null || data.theme is map) &&
           (!('type' in data) || data.type in ['group', 'half-finale', 'finale']) &&
-          data.keys().hasOnly(['name', 'order', 'type', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'theme', 'createdAt', 'updatedAt'])
+          data.keys().hasOnly(['name', 'order', 'type', 'audioUrl', 'backgroundImageUrl', 'theme', 'createdAt', 'updatedAt'])
         );
       }
 
@@ -149,11 +147,9 @@ service cloud.firestore {
           (!('order' in data) || (data.order is int && data.order >= 0 && data.order <= 1000)) &&
           (!('audioUrl' in data) || isValidOptionalStorageUrl(data.audioUrl)) &&
           (!('backgroundImageUrl' in data) || isValidOptionalStorageUrl(data.backgroundImageUrl)) &&
-          (!('audioPath' in data) || isValidOptionalString(data.audioPath, 500)) &&
-          (!('backgroundImagePath' in data) || isValidOptionalString(data.backgroundImagePath, 500)) &&
           (!('theme' in data) || data.theme == null || data.theme is map) &&
           (!('type' in data) || data.type in ['group', 'half-finale', 'finale']) &&
-          data.keys().hasOnly(['name', 'order', 'type', 'audioUrl', 'audioPath', 'backgroundImageUrl', 'backgroundImagePath', 'theme', 'createdAt', 'updatedAt'])
+          data.keys().hasOnly(['name', 'order', 'type', 'audioUrl', 'backgroundImageUrl', 'theme', 'createdAt', 'updatedAt'])
         );
       }
     }
@@ -181,11 +177,8 @@ service cloud.firestore {
           isValidOptionalString(data.explanation, 2000) &&
           isValidOptionalStorageUrl(data.imageUrl) &&
           isValidOptionalString(data.roundId, 100) &&
-          (!('image' in data) || data.image == null) &&
-          (!('imageMimeType' in data) || data.imageMimeType == null) &&
-          (!('round' in data) || data.round == null) &&
           (!('answers' in data) || data.answers == null || (data.answers is list && data.answers.size() == 0)) &&
-          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'image', 'imageMimeType', 'roundId', 'round', 'answers', 'createdAt', 'updatedAt'])
+          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'roundId', 'answers', 'createdAt', 'updatedAt'])
         );
       }
 
@@ -202,7 +195,7 @@ service cloud.firestore {
           (!('order' in data) || (data.order is int && data.order >= 0 && data.order <= 1000)) &&
           (!('imageUrl' in data) || isValidOptionalStorageUrl(data.imageUrl)) &&
           (!('roundId' in data) || isValidOptionalString(data.roundId, 100)) &&
-          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'image', 'imageMimeType', 'roundId', 'round', 'answers', 'createdAt', 'updatedAt'])
+          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'roundId', 'answers', 'createdAt', 'updatedAt'])
         );
       }
     }
@@ -228,9 +221,7 @@ service cloud.firestore {
           isCurrentTimestamp(data.updatedAt) &&
           (!('order' in data) || (data.order is int && data.order >= 0 && data.order <= 100)) &&
           isValidOptionalStorageUrl(data.imageUrl) &&
-          (!('image' in data) || data.image == null) &&
-          (!('imageMimeType' in data) || data.imageMimeType == null) &&
-          data.keys().hasOnly(['text', 'isCorrect', 'order', 'imageUrl', 'image', 'imageMimeType', 'questionId', 'createdAt', 'updatedAt'])
+          data.keys().hasOnly(['text', 'isCorrect', 'order', 'imageUrl', 'questionId', 'createdAt', 'updatedAt'])
         );
       }
 
@@ -244,7 +235,7 @@ service cloud.firestore {
           (!('isCorrect' in data) || data.isCorrect is bool) &&
           (!('order' in data) || (data.order is int && data.order >= 0 && data.order <= 100)) &&
           (!('imageUrl' in data) || isValidOptionalStorageUrl(data.imageUrl)) &&
-          data.keys().hasOnly(['text', 'isCorrect', 'order', 'imageUrl', 'image', 'imageMimeType', 'questionId', 'createdAt', 'updatedAt'])
+          data.keys().hasOnly(['text', 'isCorrect', 'order', 'imageUrl', 'questionId', 'createdAt', 'updatedAt'])
         );
       }
     }

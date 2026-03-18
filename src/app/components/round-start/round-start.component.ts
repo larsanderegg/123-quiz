@@ -80,8 +80,8 @@ export class RoundStartComponent implements OnInit, OnDestroy {
         next: (round) => {
           console.log('✅ [RoundStart] Round data received:', round);
           this.roundData = round;
-          this.backgroundImage = round.backgroundImageUrl || round.backgroundImagePath || null;
-          const audioSrc = round.audioUrl || round.audioPath || null;
+          this.backgroundImage = round.backgroundImageUrl || null;
+          const audioSrc = round.audioUrl || null;
           if (audioSrc) {
             this.roundAudio = new Audio(audioSrc);
             this.roundAudio.load();

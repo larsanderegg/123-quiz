@@ -35,8 +35,7 @@
                            'incorrect-answer-dim': showCorrectHighlight && !answer.isCorrect,
                            'blinking': isBlinkingStepActive && isAnswerBlinking(i)
                          }">
-          <img *ngIf="answer.image" [src]="'data:' + answer.imageMimeType + ';base64,' + answer.image"
-               alt="Answer Image" class="answer-image">
+          <img *ngIf="answer.imageUrl" [src]="answer.imageUrl" alt="Answer Image" class="answer-image">
           <span class="answer-text">{{ answer.text }}</span>
         </div>
         <ng-template #placeholderSlot>
@@ -48,12 +47,12 @@
       </ng-container>
     </div>
 
-    <div *ngIf="showExplanation && (currentQuestion.explanation || (currentQuestion.image && currentQuestion.imageMimeType))"
+    <div *ngIf="showExplanation && (currentQuestion.explanation || currentQuestion.imageUrl)"
          class="explanation-container expanded visible">
 
-      <img *ngIf="currentQuestion.image && currentQuestion.imageMimeType"
+      <img *ngIf="currentQuestion.imageUrl"
            class="explanation-image"
-           [src]="'data:' + currentQuestion.imageMimeType + ';base64,' + currentQuestion.image"
+           [src]="currentQuestion.imageUrl"
            alt="Explanation image for question {{ currentQuestionIndex + 1 }}">
       <p *ngIf="currentQuestion.explanation" class="explanation-text">
         {{ currentQuestion.explanation }}
