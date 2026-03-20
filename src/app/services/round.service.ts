@@ -50,11 +50,16 @@ export class RoundService {
    * Create a new round
    */
   createRound(roundData: RoundInput): Observable<Round> {
-    const data = {
-      ...roundData,
+    const data: Record<string, any> = {
+      name: roundData.name,
+      order: Math.floor(roundData.order),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
+    if (roundData.type) data['type'] = roundData.type;
+    if (roundData.audioUrl) data['audioUrl'] = roundData.audioUrl;
+    if (roundData.backgroundImageUrl) data['backgroundImageUrl'] = roundData.backgroundImageUrl;
+    if (roundData.theme) data['theme'] = roundData.theme;
 
     return from(addDoc(this.roundsCollection, data)).pipe(
       switchMap(docRef => this.getRoundById(docRef.id))

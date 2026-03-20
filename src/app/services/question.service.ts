@@ -71,11 +71,17 @@ export class QuestionService {
    * Create a new question
    */
   createQuestion(questionData: QuestionInput): Observable<Question> {
-    const data = {
-      ...questionData,
+    const data: Record<string, any> = {
+      text: questionData.text,
+      category: questionData.category,
+      introduction: questionData.introduction,
+      order: Math.floor(questionData.order),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
+    if (questionData.explanation) data['explanation'] = questionData.explanation;
+    if (questionData.imageUrl) data['imageUrl'] = questionData.imageUrl;
+    if (questionData.roundId) data['roundId'] = questionData.roundId;
 
     return from(addDoc(this.questionsCollection, data)).pipe(
       switchMap(docRef => this.getQuestionById(docRef.id))
@@ -196,11 +202,15 @@ export class QuestionService {
    * Create a new answer
    */
   createAnswer(answerData: AnswerInput): Observable<Answer> {
-    const data = {
-      ...answerData,
+    const data: Record<string, any> = {
+      text: answerData.text,
+      isCorrect: answerData.isCorrect,
+      questionId: answerData.questionId,
+      order: Math.floor(answerData.order ?? 0),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
+    if (answerData.imageUrl) data['imageUrl'] = answerData.imageUrl;
 
     return from(addDoc(this.answersCollection, data)).pipe(
       switchMap(docRef => {
