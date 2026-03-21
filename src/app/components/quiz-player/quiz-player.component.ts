@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router'; // Import NavigationEnd
 import { CommonModule, Location } from '@angular/common'; // Import Location
-import { forkJoin, interval, of, Subscription, filter, takeWhile, distinctUntilChanged, map, switchMap, tap, take } from 'rxjs'; // Import operators
+import { forkJoin, interval, of, Subscription, filter, distinctUntilChanged, map, switchMap, tap, take } from 'rxjs'; // Import operators
 // Removed first() operator as we need ongoing updates
 
 import { QuestionService } from '../../services/question.service';
@@ -45,7 +45,7 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
   activeRoundId: string | null = null; // Store active round ID
 
   isBlinkingStepActive = false;
-  blinkingState = new Map<number, boolean>();
+  blinkingAnswerIndex: number = -1;
   private blinkingIntervalSubscription: Subscription | null = null;
   private blinkingSound: HTMLAudioElement;
 
@@ -488,15 +488,14 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
     if (this.blinkingIntervalSubscription || !this.currentQuestion) return;
     if (playSound) this.playBlinkingSound();
     this.isBlinkingStepActive = true;
-    this.blinkingState.clear();
+    this.blinkingAnswerIndex = -1;
     this.currentlyBlinkingIndex = -1;
     this.blinkingDirection = 'forward';
     const blinkIntervalMs = 500;
     const numberOfAnswers = Math.min(this.currentQuestion.answers.length, 3);
     if (numberOfAnswers <= 0) { this.stopBlinking(); return; }
-    this.blinkingIntervalSubscription = interval(blinkIntervalMs).pipe(
-      takeWhile(() => this.isBlinkingStepActive)
-    ).subscribe(() => {
+    this.blinkingIntervalSubscription = interval(blinkIntervalMs).subscribe(() => {
+      if (!this.isBlinkingStepActive) return;
       let nextIndex;
       if (numberOfAnswers === 1) { nextIndex = 0; }
       else {
@@ -512,10 +511,14 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
           }
         }
       }
-      this.blinkingState.clear();
       if (nextIndex >= 0 && nextIndex < numberOfAnswers) {
-        this.blinkingState.set(nextIndex, true); this.currentlyBlinkingIndex = nextIndex;
-      } else { this.currentlyBlinkingIndex = -1; }
+        this.blinkingAnswerIndex = nextIndex;
+        this.currentlyBlinkingIndex = nextIndex;
+      } else {
+        this.blinkingAnswerIndex = -1;
+        this.currentlyBlinkingIndex = -1;
+      }
+      this.cdr.detectChanges();
     });
   }
 
@@ -524,15 +527,14 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
     this.blinkingIntervalSubscription?.unsubscribe();
     this.blinkingIntervalSubscription = null;
     this.isBlinkingStepActive = false;
-    this.blinkingState.clear();
+    this.blinkingAnswerIndex = -1;
     this.currentlyBlinkingIndex = -1;
     this.blinkingSound.pause();
     this.blinkingSound.currentTime = 0;
   }
 
   isAnswerBlinking(index: number): boolean {
-    // This method logic remains the same
-    return this.blinkingState.get(index) ?? false;
+    return this.isBlinkingStepActive && this.blinkingAnswerIndex === index;
   }
 
   // This method now ONLY updates the URL, assuming internal state is already set

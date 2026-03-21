@@ -33,7 +33,7 @@
              [ngClass]="{
                            'correct-answer-highlight': showCorrectHighlight && answer.isCorrect,
                            'incorrect-answer-dim': showCorrectHighlight && !answer.isCorrect,
-                           'blinking': isBlinkingStepActive && isAnswerBlinking(i)
+                           'blinking': isAnswerBlinking(i)
                          }">
           <img *ngIf="answer.imageUrl" [src]="answer.imageUrl" alt="Answer Image" class="answer-image">
           <span class="answer-text">{{ answer.text }}</span>
