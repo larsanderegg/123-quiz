@@ -119,6 +119,25 @@
       flex-direction: column;
       gap: $space-4;
     }
+
+    .settings-section {
+      margin-top: $space-8;
+
+      h2 {
+        margin: 0 0 $space-4;
+        font-size: $text-xl;
+        font-weight: $font-semibold;
+        color: $text-primary;
+      }
+
+      mat-card {
+        max-width: 600px;
+      }
+
+      mat-form-field {
+        width: 100%;
+      }
+    }
   }
 }
 
