@@ -13,6 +13,16 @@
     transform: translateY(-1px);
   }
 
+  &.is-disabled {
+    .question-content {
+      opacity: 0.6;
+    }
+
+    .question-text {
+      font-style: italic;
+    }
+  }
+
   .question-order {
     flex-shrink: 0;
 

@@ -39,6 +39,7 @@ export class RoundSectionComponent {
   @Output() editQuestion = new EventEmitter<string>();
   @Output() deleteQuestion = new EventEmitter<string>();
   @Output() duplicateQuestion = new EventEmitter<string>();
+  @Output() toggleQuestionEnabled = new EventEmitter<{ id: string; isEnabled: boolean }>();
 
   // Get answers for a specific question
   getAnswersForQuestion(question: Question): any[] {

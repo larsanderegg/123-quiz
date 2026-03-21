@@ -68,7 +68,8 @@
         [answers]="getAnswersForQuestion(question)"
         (edit)="editQuestion.emit($event)"
         (delete)="deleteQuestion.emit($event)"
-        (duplicate)="duplicateQuestion.emit($event)">
+        (duplicate)="duplicateQuestion.emit($event)"
+        (toggleEnabled)="toggleQuestionEnabled.emit($event)">
       </app-question-item>
 
       <button mat-stroked-button color="primary" class="add-question-btn" (click)="onAddQuestion()">

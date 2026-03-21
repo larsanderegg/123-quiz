@@ -7,6 +7,7 @@ export interface Question {
     order: number;
     imageUrl?: string;  // Firebase Storage URL
     roundId?: string;
+    isEnabled?: boolean;
     answers: any[]; // Answers array (empty array if none)
     createdAt?: Date;
     updatedAt?: Date;

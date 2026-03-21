@@ -27,6 +27,7 @@ export class QuestionItemComponent {
   @Output() edit = new EventEmitter<string>();
   @Output() delete = new EventEmitter<string>();
   @Output() duplicate = new EventEmitter<string>();
+  @Output() toggleEnabled = new EventEmitter<{ id: string; isEnabled: boolean }>();
 
   expanded: boolean = false;
 
@@ -46,5 +47,9 @@ export class QuestionItemComponent {
 
   onDuplicate(): void {
     this.duplicate.emit(this.question.id);
+  }
+
+  onToggleEnabled(): void {
+    this.toggleEnabled.emit({ id: this.question.id, isEnabled: !(this.question.isEnabled ?? true) });
   }
 }

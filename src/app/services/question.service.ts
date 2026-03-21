@@ -55,8 +55,17 @@ export class QuestionService {
     );
     return (collectionData(q, { idField: 'id' }) as Observable<Question[]>).pipe(
       take(1),
-      map(questions => questions.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)))
+      map(questions => questions
+        .filter(q => q.isEnabled !== false)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)))
     );
+  }
+
+  /**
+   * Enable or disable a question
+   */
+  setQuestionEnabled(id: string, isEnabled: boolean): Observable<Question> {
+    return this.updateQuestion(id, { isEnabled });
   }
 
   /**

@@ -1,4 +1,4 @@
-<div class="question-item">
+<div class="question-item" [class.is-disabled]="question.isEnabled === false">
 
   <div class="question-order">
     <span class="order-badge">{{ question.order !== undefined ? question.order + 1 : '-' }}</span>
@@ -46,6 +46,12 @@
   </div>
 
   <div class="question-actions">
+    <button mat-icon-button
+            [matTooltip]="(question.isEnabled ?? true) ? 'Disable question' : 'Enable question'"
+            (click)="onToggleEnabled()">
+      <mat-icon>{{ (question.isEnabled ?? true) ? 'visibility' : 'visibility_off' }}</mat-icon>
+    </button>
+
     <button mat-icon-button
             [matTooltip]="expanded ? 'Show less' : 'Show more'"
             (click)="toggleExpand()">

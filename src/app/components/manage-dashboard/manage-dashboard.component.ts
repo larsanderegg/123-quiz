@@ -210,6 +210,53 @@ export class ManageDashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Toggle question enabled/disabled state
+   */
+  onToggleQuestionEnabled(data: { id: string; isEnabled: boolean }): void {
+    this.questionService.setQuestionEnabled(data.id, data.isEnabled).subscribe({
+      next: () => {
+        const updated = this.allQuestions$.value.map(q =>
+          q.id === data.id ? { ...q, isEnabled: data.isEnabled } : q
+        );
+        this.allQuestions$.next(updated);
+        this.recomputeRoundsWithQuestions(updated);
+        this.snackBar.open(`Question ${data.isEnabled ? 'enabled' : 'disabled'}`, 'Close', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('Failed to update question', 'Close', { duration: 5000 })
+    });
+  }
+
+  /**
+   * Recompute roundsWithQuestions from a given questions list
+   */
+  private recomputeRoundsWithQuestions(questions: Question[]): void {
+    const rounds = this.allRounds$.value;
+    const roundsWithQuestions: RoundWithQuestions[] = rounds.map(round => ({
+      ...round,
+      questions: questions
+        .filter(q => q.roundId === round.id)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    }));
+
+    const unassignedQuestions = questions
+      .filter(q => !q.roundId)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    if (unassignedQuestions.length > 0) {
+      roundsWithQuestions.push({
+        id: 'unassigned',
+        name: 'Unassigned Questions',
+        order: 9999,
+        questions: unassignedQuestions,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+
+    this.roundsWithQuestions$.next(roundsWithQuestions);
+  }
+
+  /**
    * Navigate to create new question
    */
   onAddQuestion(roundId?: string): void {

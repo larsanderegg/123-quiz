@@ -175,8 +175,9 @@ service cloud.firestore {
           isValidOptionalString(data.explanation, 2000) &&
           (!('imageUrl' in data) || isValidOptionalStorageUrl(data.imageUrl)) &&
           isValidOptionalString(data.roundId, 100) &&
+          (!('isEnabled' in data) || data.isEnabled is bool) &&
           (!('answers' in data) || data.answers == null || (data.answers is list && data.answers.size() == 0)) &&
-          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'roundId', 'answers', 'createdAt', 'updatedAt'])
+          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'roundId', 'isEnabled', 'answers', 'createdAt', 'updatedAt'])
         );
       }
 
@@ -193,7 +194,8 @@ service cloud.firestore {
           (!('order' in data) || (data.order is int && data.order >= 0 && data.order <= 1000)) &&
           (!('imageUrl' in data) || isValidOptionalStorageUrl(data.imageUrl)) &&
           (!('roundId' in data) || isValidOptionalString(data.roundId, 100)) &&
-          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'roundId', 'answers', 'createdAt', 'updatedAt'])
+          (!('isEnabled' in data) || data.isEnabled is bool) &&
+          data.keys().hasOnly(['text', 'explanation', 'category', 'introduction', 'order', 'imageUrl', 'roundId', 'isEnabled', 'answers', 'createdAt', 'updatedAt'])
         );
       }
     }
