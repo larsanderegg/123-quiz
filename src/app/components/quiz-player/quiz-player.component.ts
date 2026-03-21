@@ -353,6 +353,10 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
 
     if (oldStep === newStep) {
       console.log(`[setRevealStep] Step ${newStep} is already active.`);
+      // Restart blinking if interval died (e.g. round reload at same step)
+      if (newStep === blinkingStepNumber && !this.blinkingIntervalSubscription) {
+        this.startBlinking(false);
+      }
       // Ensure LEDs are correct even if step doesn't change (e.g., on initial load)
       this.updateLedState();
       return; // No change needed
@@ -370,12 +374,16 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
     if (this.currentRevealStep > oldStep) { // Only play sounds when advancing
       if (this.currentRevealStep >= firstAnswerStepNumber && this.currentRevealStep <= lastAnswerStepNumber) {
         this.playRevealSound();
-      } else if (this.currentRevealStep === blinkingStepNumber) {
-        this.startBlinking();
       } else if (this.currentRevealStep === correctShownStepNumber) {
         this.correctAnswerSound.currentTime = 0;
         this.correctAnswerSound.play().catch(error => console.warn("Correct answer audio playback failed:", error));
       }
+    }
+
+    // Always start blinking when arriving at blinking step (any direction)
+    // Guard in startBlinking() prevents double-start; sound only on forward nav
+    if (this.currentRevealStep === blinkingStepNumber && !this.blinkingIntervalSubscription) {
+      this.startBlinking(this.currentRevealStep > oldStep);
     }
     // --- End sound logic ---
 
@@ -475,10 +483,10 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
   }
 
 
-  startBlinking(): void {
+  startBlinking(playSound: boolean = true): void {
     // This method logic remains the same
     if (this.blinkingIntervalSubscription || !this.currentQuestion) return;
-    this.playBlinkingSound();
+    if (playSound) this.playBlinkingSound();
     this.isBlinkingStepActive = true;
     this.blinkingState.clear();
     this.currentlyBlinkingIndex = -1;
