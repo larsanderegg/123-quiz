@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import {QuizPlayerComponent} from './components/quiz-player/quiz-player.component';
 import {QuizStartComponent} from './components/quiz-start/quiz-start.component';
+import {QuizOverviewComponent} from './components/quiz-overview/quiz-overview.component';
 import {RoundStartComponent} from './components/round-start/round-start.component';
 import {LoginComponent} from './components/login/login.component';
 import {UnauthorizedComponent} from './components/unauthorized/unauthorized.component';
@@ -15,6 +16,7 @@ export const routes: Routes = [
 
   // Quiz Routes (viewer or admin users only)
   { path: 'quiz/start', component: QuizStartComponent, canActivate: [viewerGuard] },
+  { path: 'quiz/overview', component: QuizOverviewComponent, canActivate: [viewerGuard] },
   { path: 'quiz/:roundId/start', component: RoundStartComponent, canActivate: [viewerGuard] },
   { path: 'quiz/:roundId/finished', component: QuizPlayerComponent, canActivate: [viewerGuard] },
   { path: 'quiz/:roundId/play/question/:questionIndex/step/:stepIndex', component: QuizPlayerComponent, canActivate: [viewerGuard] },
