@@ -1,0 +1,97 @@
+@use '@angular/material' as mat;
+
+.start-page-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  width: 100%;
+
+  background-image: url('/assets/images/start.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #666;
+  gap: 15px;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 40px;
+  color: #777;
+  p { margin-bottom: 15px; }
+  button { margin-top: 10px; }
+}
+
+.rounds-selection-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-top: 150px;
+}
+
+.pyramid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.tier {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.tier-finale { max-width: 320px; }
+.tier-half-finale { max-width: 672px; }
+.tier-group { max-width: 100%; }
+
+.round-card-vertical {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  flex-basis: auto;
+  width: auto;
+
+  background-color: rgba(255, 255, 255, 0.9);
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  &:focus {
+    outline: 2px solid mat.m2-get-color-from-palette(mat.$m2-indigo-palette, 300);
+    outline-offset: 2px;
+  }
+
+  .round-card-content {
+    padding: 16px !important;
+  }
+
+  .round-name {
+    font-size: 1.3rem;
+    font-weight: 500;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+}
