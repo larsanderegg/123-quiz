@@ -10,10 +10,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
 import { BehaviorSubject, Subject, combineLatest, forkJoin } from 'rxjs';
 import { map, takeUntil, debounceTime } from 'rxjs/operators';
 import { QuestionService } from '../../services/question.service';
 import { RoundService } from '../../services/round.service';
+import { LedControlService } from '../../services/led-control.service';
 import { Round, Question } from '../../models';
 import { RoundSectionComponent, RoundWithQuestions } from './round-section/round-section.component';
 import { LoadingSkeletonComponent } from '../shared/loading-skeleton/loading-skeleton.component';
@@ -33,6 +35,7 @@ import { EmptyStateComponent } from '../shared/empty-state/empty-state.component
     MatSelectModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatCardModule,
     RoundSectionComponent,
     LoadingSkeletonComponent,
     EmptyStateComponent
@@ -61,13 +64,17 @@ export class ManageDashboardComponent implements OnInit, OnDestroy {
   searchTerm = '';
   selectedRoundFilter = 'all';
   availableRounds: Round[] = [];
+  ledApiUrl = '';
 
   constructor(
     private questionService: QuestionService,
     private roundService: RoundService,
     private router: Router,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    private ledControlService: LedControlService
+  ) {
+    this.ledApiUrl = this.ledControlService.getApiUrl() ?? '';
+  }
 
   ngOnInit(): void {
     this.loadData();
@@ -380,5 +387,16 @@ export class ManageDashboardComponent implements OnInit, OnDestroy {
    */
   trackByRoundId(index: number, round: RoundWithQuestions): string {
     return round.id;
+  }
+
+  onSaveLedUrl(): void {
+    this.ledControlService.setApiUrl(this.ledApiUrl);
+    this.snackBar.open('LED API URL saved', 'Close', { duration: 3000 });
+  }
+
+  onClearLedUrl(): void {
+    this.ledControlService.clearApiUrl();
+    this.ledApiUrl = '';
+    this.snackBar.open('LED API URL cleared', 'Close', { duration: 3000 });
   }
 }

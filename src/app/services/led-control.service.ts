@@ -1,28 +1,37 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { LedControlMode } from '../models';
 import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
-/**
- * LED Control Service
- * 
- * @deprecated This service is currently non-functional as the backend has been removed.
- * LED control functionality is optional and can be implemented in the future via:
- * - Cloud Functions
- * - Separate microservice
- * - Client-side control (if hardware is connected locally)
- */
+const STORAGE_KEY = 'led_control_url';
+
 @Injectable({
   providedIn: 'root'
 })
 export class LedControlService {
-  /**
-   * Change LED mode
-   * @deprecated This method is non-functional without a backend
-   * @param mode The LED control mode
-   * @returns Observable that emits false (not implemented)
-   */
+  constructor(private http: HttpClient) {}
+
+  getApiUrl(): string | null {
+    return localStorage.getItem(STORAGE_KEY);
+  }
+
+  setApiUrl(url: string): void {
+    localStorage.setItem(STORAGE_KEY, url);
+  }
+
+  clearApiUrl(): void {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
   changeLedMode(mode: LedControlMode): Observable<boolean> {
-    console.warn('LED control is not implemented in the serverless architecture');
-    return of(false);
+    const apiUrl = this.getApiUrl();
+    if (!apiUrl) {
+      return of(false);
+    }
+    return this.http.post<any>(`${apiUrl}/mode`, { mode }).pipe(
+      map(() => true),
+      catchError(() => of(false))
+    );
   }
 }
