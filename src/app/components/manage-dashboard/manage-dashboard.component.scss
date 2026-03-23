@@ -9,9 +9,6 @@
 
   // Toolbar
   .dashboard-toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
     box-shadow: $shadow-md;
 
     .toolbar-content {
@@ -28,14 +25,14 @@
         min-width: 0;
 
         .toolbar-icon {
-          font-size: 32px;
-          width: 32px;
-          height: 32px;
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
         }
 
         .toolbar-title {
           margin: 0;
-          font-size: $text-2xl;
+          font-size: $text-lg;
           font-weight: $font-bold;
           white-space: nowrap;
           overflow: hidden;
@@ -60,26 +57,18 @@
     background: $surface;
     border-bottom: 1px solid $border;
     box-shadow: $shadow-sm;
-    position: sticky;
-    top: 64px;
-    z-index: 90;
 
     .filters-content {
       max-width: 1400px;
       margin: 0 auto;
       padding: $space-4;
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: $space-4;
       align-items: flex-start;
 
       .search-field {
         flex: 1;
-        min-width: 280px;
-      }
-
-      .filter-field {
-        min-width: 200px;
       }
 
       .view-controls {
@@ -175,23 +164,6 @@
         .search-field,
         .filter-field {
           width: 100%;
-        }
-
-        .view-controls {
-          width: 100%;
-          margin-left: 0;
-          justify-content: space-between;
-
-          button {
-            flex: 1;
-            font-size: $text-xs;
-
-            mat-icon {
-              font-size: 18px;
-              width: 18px;
-              height: 18px;
-            }
-          }
         }
       }
     }

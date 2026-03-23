@@ -60,14 +60,6 @@
 
       <!-- View Controls -->
       <div class="view-controls">
-        <button mat-stroked-button (click)="expandAll()" matTooltip="Expand all rounds">
-          <mat-icon>unfold_more</mat-icon>
-          Expand All
-        </button>
-        <button mat-stroked-button (click)="collapseAll()" matTooltip="Collapse all rounds">
-          <mat-icon>unfold_less</mat-icon>
-          Collapse All
-        </button>
         <button
           mat-stroked-button
           *ngIf="searchTerm || selectedRoundFilter !== 'all'"
