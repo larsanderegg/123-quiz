@@ -629,7 +629,6 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
 
 
   navigateToStart(): void {
-    console.log('navigateToStart called');
-    this.router.navigate(['/quiz/start']); // Navigate away
+    this.router.navigate(['/quiz/overview']); // Navigate away
   }
 }
