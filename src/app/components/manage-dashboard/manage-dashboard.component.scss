@@ -68,7 +68,14 @@
       align-items: flex-start;
 
       .search-field {
+        flex: 2;
+        min-width: 200px;
+      }
+
+      .filter-field {
         flex: 1;
+        min-width: 160px;
+        max-width: 260px;
       }
 
       .view-controls {
