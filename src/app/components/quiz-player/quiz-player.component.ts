@@ -491,7 +491,7 @@ export class QuizPlayerComponent implements OnInit, OnDestroy {
     this.blinkingAnswerIndex = -1;
     this.currentlyBlinkingIndex = -1;
     this.blinkingDirection = 'forward';
-    const blinkIntervalMs = 500;
+    const blinkIntervalMs = 400;
     const numberOfAnswers = Math.min(this.currentQuestion.answers.length, 3);
     if (numberOfAnswers <= 0) { this.stopBlinking(); return; }
     this.blinkingIntervalSubscription = interval(blinkIntervalMs).subscribe(() => {
