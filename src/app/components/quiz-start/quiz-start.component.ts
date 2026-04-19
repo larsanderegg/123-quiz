@@ -10,18 +10,14 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrls: ['./quiz-start.component.scss']
 })
 export class QuizStartComponent implements OnInit {
-  private introSound: HTMLAudioElement;
 
   constructor(private router: Router) {
-    this.introSound = new Audio('assets/sounds/intro.mp3');
   }
 
   ngOnInit(): void {
-    this.introSound.load();
   }
 
   onStart(): void {
-    this.introSound.play();
     this.router.navigate(['/quiz/overview']);
   }
 }
