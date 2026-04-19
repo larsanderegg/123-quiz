@@ -93,6 +93,12 @@ export class QuestionFormComponent implements OnInit, OnDestroy {
       this.addAnswer(); // Answer 1
       this.addAnswer(); // Answer 2
       this.addAnswer(); // Answer 3
+
+      // Pre-select round if navigated from a round's "Add Question" button
+      const roundId = this.route.snapshot.queryParamMap.get('roundId');
+      if (roundId) {
+        this.questionForm.patchValue({ roundId });
+      }
     }
 
     // Setup preview subscription
