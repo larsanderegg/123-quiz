@@ -81,7 +81,8 @@ export class QuestionFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadAllRounds();
+    const preselectedRoundId = this.route.snapshot.queryParamMap.get('roundId');
+    this.loadAllRounds(preselectedRoundId ?? undefined);
     this.questionId = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.questionId;
     this.isLoading = this.isEditMode;
@@ -93,12 +94,6 @@ export class QuestionFormComponent implements OnInit, OnDestroy {
       this.addAnswer(); // Answer 1
       this.addAnswer(); // Answer 2
       this.addAnswer(); // Answer 3
-
-      // Pre-select round if navigated from a round's "Add Question" button
-      const roundId = this.route.snapshot.queryParamMap.get('roundId');
-      if (roundId) {
-        this.questionForm.patchValue({ roundId });
-      }
     }
 
     // Setup preview subscription
@@ -106,10 +101,13 @@ export class QuestionFormComponent implements OnInit, OnDestroy {
   }
 
   // Fetch all rounds for the dropdown
-  loadAllRounds(): void {
+  loadAllRounds(preselectedRoundId?: string): void {
     this.roundService.getAllRounds().pipe(take(1)).subscribe({
       next: (rounds) => {
-        this.allRounds = rounds.sort((a,b) => a.name.localeCompare(b.name)); // Sort alphabetically
+        this.allRounds = rounds.sort((a,b) => a.name.localeCompare(b.name));
+        if (preselectedRoundId) {
+          this.questionForm.patchValue({ roundId: preselectedRoundId });
+        }
         console.log('Loaded rounds:', this.allRounds);
       },
       error: (err) => {
