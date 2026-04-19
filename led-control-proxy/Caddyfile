@@ -1,0 +1,11 @@
+localhost:8443 {
+    @options method OPTIONS
+    handle @options {
+        header Access-Control-Allow-Origin "*"
+        header Access-Control-Allow-Methods "POST, GET, OPTIONS"
+        header Access-Control-Allow-Headers "Content-Type"
+        respond 204
+    }
+
+    reverse_proxy http://192.168.0.65
+}
