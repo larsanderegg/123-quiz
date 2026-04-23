@@ -273,7 +273,8 @@
   .explanation-image {
     display: block;
     max-width: 80%;
-    max-height: 40vh;
+    height: 50%;
+    max-height: 50%;
     margin: 0 auto 20px auto;
     object-fit: contain;
     border-radius: 4px;
@@ -283,7 +284,7 @@
   // Expand explanation area significantly when visible
   &.expanded {
     flex-grow: 1;
-    max-height: 70vh; // Allow much more height
+    height: 70vh; // Allow much more height
     margin-bottom: 2vh;
     padding: 25px 35px;
     // font-size: 1.1rem; // Already handled by clamp
