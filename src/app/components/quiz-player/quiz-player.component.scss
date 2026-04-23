@@ -285,6 +285,7 @@
   &.expanded {
     flex-grow: 1;
     height: 70vh; // Allow much more height
+    max-height: 70vh; // Override base max-height: 15vh so percentage child sizing works
     margin-bottom: 2vh;
     padding: 25px 35px;
     // font-size: 1.1rem; // Already handled by clamp
